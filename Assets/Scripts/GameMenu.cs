@@ -20,7 +20,7 @@ namespace DefaultNamespace
 
         private void Update()
         {
-            if (Input.GetKeyDown(options.InGameMenuButton))
+            if (Input.GetKeyDown(options.InGameMenuButtonKey))
             {
                 menuPanel.SetActive(!menuPanel.activeSelf);
             }

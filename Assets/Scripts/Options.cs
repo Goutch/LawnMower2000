@@ -2,9 +2,18 @@
 
 public class Options : MonoBehaviour
 {
-    /*
-    * Contains options ( the controls, the game mode ex: online/AI) 
-    */
-    public KeyCode InGameMenuButton { private set; get; } = KeyCode.Escape;
+    public enum GameModeType
+    {
+        OfflineVsAI,
+        Online,
+    }
+
+    public GameModeType GameMode { private set; get; }  =GameModeType.OfflineVsAI;
+    public Color LawnMower1Color { private set; get; } = Color.blue;
+    public Color LawnMower2Color { private set; get; } = Color.red;
+    public KeyCode InGameMenuButtonKey { private set; get; } = KeyCode.Escape;
+    public KeyCode ContinueKey { private set; get; }  = KeyCode.W;
+    public KeyCode TurnLeftKey { private set; get; } = KeyCode.A;
+    public KeyCode TurnRightKey { private set; get; } = KeyCode.D;
     public Vector2Int MapSize { private set; get; } = new Vector2Int(16, 16);
 }

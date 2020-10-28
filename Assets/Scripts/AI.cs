@@ -29,11 +29,11 @@ public class AI : MonoBehaviour
         options = gameManager.GetComponent<Options>();
         map = gameManager.GetMap();
         lawnMower = GetComponent<LawnMower>();
-        lawnMower.OnNextPositionFound += OnNextPositionFound;
+        lawnMower.OnReachedDestination += OnReachedDestination;
         lawnMower.OnWallHit += OnHitWall;
     }
 
-    private void OnNextPositionFound(Vector2Int position, LawnMower.Orientation orientation)
+    private void OnReachedDestination(Vector2Int position, LawnMower.Orientation orientation)
     {
         lawnMower.SetNextTurn(FindNextMove(position, orientation));
     }
@@ -61,9 +61,9 @@ public class AI : MonoBehaviour
                 break;
             }
 
-            Vector2Int front = position;
-            Vector2Int left = position;
-            Vector2Int right = position;
+            Vector2Int front = current.position;
+            Vector2Int left = current.position;
+            Vector2Int right = current.position;
             switch (current.orientation)
             {
                 case LawnMower.Orientation.down:
@@ -92,7 +92,7 @@ public class AI : MonoBehaviour
             if (map.ContainPosition(front) && map.GetTile(front) != Map.TileType.Wall && !closed.Contains(front))
                 open.Enqueue(new Node(front, current, orientation));
             if (map.ContainPosition(right) && map.GetTile(right) != Map.TileType.Wall && !closed.Contains(right))
-                open.Enqueue(new Node(right, current, (LawnMower.Orientation) (((int) orientation + 1) % 4)));
+               open.Enqueue(new Node(right, current, (LawnMower.Orientation) (((int) orientation + 1) % 4)));
             if (map.ContainPosition(left) && map.GetTile(left) != Map.TileType.Wall && !closed.Contains(left))
                 open.Enqueue(new Node(left, current, (LawnMower.Orientation) (((int) orientation + 3) % 4)));
         }

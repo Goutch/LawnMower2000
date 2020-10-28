@@ -14,16 +14,16 @@ public class LawnMower : MonoBehaviour
 
     public delegate void LawnMowerNextPositionEvent(Vector2Int nextPosition,Orientation orientation);
 
-    public event LawnMowerNextPositionEvent OnNextPositionFound;
+    public event LawnMowerNextPositionEvent OnReachedDestination;
 
     public delegate void LawnMowerHitWallEvent(Vector2Int position,Orientation orientation);
 
     public event LawnMowerHitWallEvent OnWallHit;
     [SerializeField]private Transform front;
-    private Orientation orientation;
-    private int nextTurn = 0;
-    private Vector2Int nextTilePosition;
-    private GameManager gameManager;
+    [SerializeField]private Orientation orientation;
+    [SerializeField]private int nextTurn = 0;
+    [SerializeField]private Vector2Int nextTilePosition;
+    [SerializeField]private GameManager gameManager;
 
     private Map map;
     private int points = 0;
@@ -50,7 +50,7 @@ public class LawnMower : MonoBehaviour
             Mow();
             Turn();
             nextTurn = 0;
-
+            OnReachedDestination?.Invoke(nextTilePosition,orientation);
         }
 
         //move if does not it wall
@@ -63,7 +63,6 @@ public class LawnMower : MonoBehaviour
         else if (nextTurn != 0)
         {
             Turn();
-            nextTurn = 0;
         }
         //notify wall was hit to change tragectory
         else
@@ -100,14 +99,11 @@ public class LawnMower : MonoBehaviour
                 nextTilePosition.x -= 1;
                 break;
         }
-
-        OnNextPositionFound?.Invoke(nextTilePosition,orientation);
     }
 
     private void Turn()
     {
         orientation = (Orientation) (((int) orientation + nextTurn) % 4);
-
         transform.Rotate(Vector3.forward, -90 * nextTurn);
         FindNextPosition();
     }

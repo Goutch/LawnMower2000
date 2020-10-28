@@ -127,9 +127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 609118f512c51b94eae0b71485755585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  orientation: 0
-  nextTurn: 0
-  nextTilePosition: {x: 0, y: 0}
   front: {fileID: 6709737427120792345}
 --- !u!1 &8113171275930122537
 GameObject:

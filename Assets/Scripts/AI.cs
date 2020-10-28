@@ -78,14 +78,14 @@ public class AI : MonoBehaviour
                     break;
                 case LawnMower.Orientation.right:
                     front.x += 1;
-                    right.y += 1;
-                    left.y -= 1;
+                    right.y -= 1;
+                    left.y += 1;
                     break;
 
                 case LawnMower.Orientation.left:
                     front.x -= 1;
-                    right.y -= 1;
-                    left.y += 1;
+                    right.y += 1;
+                    left.y -= 1;
                     break;
             }
 

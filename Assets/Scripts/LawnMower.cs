@@ -16,10 +16,10 @@ public class LawnMower : MonoBehaviour
     [SerializeField]private Orientation orientation;
     [SerializeField]private int nextTurn = 0;
     [SerializeField]private Vector2Int nextTilePosition;
-    private Map map;
-    private int points=0;
     [SerializeField] private Transform front;
 
+    private Map map;
+    private int points=0;
     private void Start()
     {
         FindNextPosition();
@@ -90,6 +90,10 @@ public class LawnMower : MonoBehaviour
         FindNextPosition();
     }
 
+    public int GetPoints()
+    {
+        return points;
+    }
     public void SetNextTurn(int turn)
     {
         if (turn == -1)

@@ -1,12 +1,17 @@
 ﻿using DefaultNamespace;
+using System;
+using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static Options;
+using Photon.Pun;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject mapPrefab;
     [SerializeField] private GameObject LawnMowerPrefab;
+
     private Options options;
     private bool gameSceneActive = false;
     private LawnMower[] lawnMowers;
@@ -17,7 +22,15 @@ public class GameManager : MonoBehaviour
         LoadMenu();
     }
 
+    private void StartNetworkGame()
+    {
+        DefaultPool pool = PhotonNetwork.PrefabPool as DefaultPool;
+        mapPrefab.AddComponent<PhotonView>();
+        pool.ResourceCache.Add("GameMap", mapPrefab);
 
+        Map map = PhotonNetwork.Instantiate("GameMap", Vector3.zero, Quaternion.identity).GetComponent<Map>();
+        map.Init();
+    }
 
     private void StartGame()
     {
@@ -46,15 +59,40 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void LoadGame()
+    private void OnJoinedRoom(object sender)
     {
-        SceneManager.LoadScene("Scenes/Game", LoadSceneMode.Additive);
+        NetworkManager networkManager = (NetworkManager)sender;
+        networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
+
+        StartCoroutine(LoadOnlineGameAsynchronously("Scenes/Game"));
+    }
+
+    public void LoadOnlineGame(string roomName)
+    {
+        options.GameMode = GameModeType.Online;
+
+        NetworkManager networkManager = new GameObject().AddComponent<NetworkManager>();
+        networkManager.name = "NetworkManager";
+        Scene scene = SceneManager.GetSceneByName("Main");
+        SceneManager.MoveGameObjectToScene(networkManager.gameObject, scene);
+
+        networkManager.OnJoinedRoomEvent += OnJoinedRoom;
+        networkManager.Connect(roomName);
+
+        
+    }
+
+    public void LoadLocalGame()
+    {
+        options.GameMode = GameModeType.OfflineVsAI;
+        StartCoroutine(LoadLocalGameAsynchronously("Scenes/Game"));
     }
 
     public void LoadMenu()
     {
         SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Additive);
     }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Game")
@@ -62,7 +100,11 @@ public class GameManager : MonoBehaviour
             SceneManager.SetActiveScene(scene);
             SceneManager.UnloadSceneAsync("Menu");
             gameSceneActive = true;
-            StartGame();
+
+            if(options.GameMode == GameModeType.OfflineVsAI)
+            {
+                StartGame();
+            }
         }
 
         if (scene.name == "Menu")
@@ -73,5 +115,27 @@ public class GameManager : MonoBehaviour
                 SceneManager.UnloadSceneAsync("Game");
             }
         }
+    }
+
+    IEnumerator LoadLocalGameAsynchronously(string sceneName)
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
+
+        while (!operation.isDone)
+        {
+            yield return null;
+        }
+    }
+
+    IEnumerator LoadOnlineGameAsynchronously(string sceneName)
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
+
+        while (!operation.isDone)
+        {
+            yield return null;
+        }
+
+        StartNetworkGame();
     }
 }

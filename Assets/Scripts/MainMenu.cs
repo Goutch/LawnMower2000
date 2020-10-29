@@ -3,23 +3,53 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] private Button playButton;
+    [SerializeField] private GameObject MainMenuPanel = null;
+    [SerializeField] private GameObject LocalOnlineMenuPanel = null;
+    [SerializeField] private GameObject JoinRoomMenuPanel = null;
+
+    [SerializeField] private InputField RoomInputField = null;
+
     private GameManager gameManager;
     private Options options;
+
     void Start()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         options = gameManager.GetComponent<Options>();
-        playButton.onClick.AddListener(OnPlayButtonClick);
     }
 
-    private void OnDestroy()
+    public void OnPlayButtonClick()
     {
-        playButton.onClick.RemoveListener(OnPlayButtonClick);
+        MainMenuPanel.SetActive(false);
+        LocalOnlineMenuPanel.SetActive(true);
     }
 
-    private void OnPlayButtonClick()
+    public void OnLocalButtonClick()
     {
-        gameManager.LoadGame();
+        gameManager.LoadLocalGame();
+    }
+
+    public void OnOnlineButtonClick()
+    {
+        LocalOnlineMenuPanel.SetActive(false);
+        JoinRoomMenuPanel.SetActive(true);
+    }
+
+    public void OnBackButtonLocalOnlineMenuPanelClick()
+    {
+        MainMenuPanel.SetActive(true);
+        LocalOnlineMenuPanel.SetActive(false);
+    }
+
+
+    public void OnJoinButtonClick()
+    {
+        gameManager.LoadOnlineGame(RoomInputField.text);
+    }
+
+    public void OnBackButtonJoinRoomMenu()
+    {
+        LocalOnlineMenuPanel.SetActive(true);
+        JoinRoomMenuPanel.SetActive(false);
     }
 }

@@ -8,7 +8,7 @@ public class Options : MonoBehaviour
         Online,
     }
 
-    public GameModeType GameMode { private set; get; }  =GameModeType.OfflineVsAI;
+    public GameModeType GameMode { set; get; }  = GameModeType.OfflineVsAI;
     public Color LawnMower1Color { private set; get; } = Color.blue;
     public Color LawnMower2Color { private set; get; } = Color.red;
     public KeyCode InGameMenuButtonKey { private set; get; } = KeyCode.Escape;

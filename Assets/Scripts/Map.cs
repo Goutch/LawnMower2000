@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.WSA;
 using Random = UnityEngine.Random;
 
 public class Map : MonoBehaviour
@@ -26,6 +25,12 @@ public class Map : MonoBehaviour
 
     private void Start()
     {
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        options = gameManager.GetComponent<Options>();
+
+        tileMap = GetComponentInChildren<Tilemap>();
+        grid = GetComponent<Grid>();
+
         Camera.main.transform.position = new Vector3(sizeX / 2f, sizeY / 2f, -1);
         Camera.main.orthographicSize = (tileMap.localBounds.max.y - tileMap.localBounds.min.y) / 2f;
     }
@@ -34,8 +39,10 @@ public class Map : MonoBehaviour
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         options = gameManager.GetComponent<Options>();
+
         tileMap = GetComponentInChildren<Tilemap>();
         grid = GetComponent<Grid>();
+
         GenerateRandomMap(options.MapSize.x, options.MapSize.y);
         tileMap.CompressBounds();
     }

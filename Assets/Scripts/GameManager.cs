@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     private bool gameSceneActive = false;
     private LawnMower[] lawnMowers;
     private Map map;
+
     void Start()
     {
         options = GetComponent<Options>();
@@ -27,12 +28,7 @@ public class GameManager : MonoBehaviour
 
     private void StartNetworkGame()
     {
-        DefaultPool pool = PhotonNetwork.PrefabPool as DefaultPool;
-        mapPrefab.AddComponent<PhotonView>();
-        pool.ResourceCache.Add("GameMap", mapPrefab);
 
-        Map map = PhotonNetwork.Instantiate("GameMap", Vector3.zero, Quaternion.identity).GetComponent<Map>();
-        map.Init();
     }
 
     private void StartGame()
@@ -65,6 +61,13 @@ public class GameManager : MonoBehaviour
     }
 
     private void OnJoinedRoom(object sender)
+    {
+        NetworkManager networkManager = (NetworkManager)sender;
+        networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
+
+        StartCoroutine(LoadOnlineGameAsynchronously("Scenes/Game"));
+    }
+
     public LawnMower[] GetLawnmowers()
     {
         return lawnMowers;
@@ -73,14 +76,6 @@ public class GameManager : MonoBehaviour
     public bool IsGameActive()
     {
         return gameSceneActive;
-    }
-
-    public void LoadGame()
-    {
-        NetworkManager networkManager = (NetworkManager)sender;
-        networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
-
-        StartCoroutine(LoadOnlineGameAsynchronously("Scenes/Game"));
     }
 
     public void LoadOnlineGame(string roomName)
@@ -94,8 +89,6 @@ public class GameManager : MonoBehaviour
 
         networkManager.OnJoinedRoomEvent += OnJoinedRoom;
         networkManager.Connect(roomName);
-
-        
     }
 
     public void LoadLocalGame()
@@ -152,7 +145,11 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        StartNetworkGame();
+        if (operation.isDone)
+        {
+            StartNetworkGame();
+        }
+        
     }
 
     public Map GetMap()

@@ -24,7 +24,5 @@ public class Player : MonoBehaviour
         {
             lawnMower.SetNextTurn(0);
         }
-        
-        
     }
 }

@@ -7,8 +7,13 @@ namespace DefaultNamespace
     {
         [SerializeField] private GameObject menuPanel;
         [SerializeField] private Button backToMenuButton;
+        [SerializeField] private Text points1;
+        [SerializeField] private Text points2;
+        [SerializeField] private Image color1;
+        [SerializeField] private Image color2;
         private GameManager gameManager;
         private Options options;
+
 
         private void Start()
         {
@@ -23,6 +28,15 @@ namespace DefaultNamespace
             if (Input.GetKeyDown(options.InGameMenuButtonKey))
             {
                 menuPanel.SetActive(!menuPanel.activeSelf);
+            }
+
+            if (gameManager.IsGameActive())
+            {
+                LawnMower[] lawnMowers = gameManager.GetLawnmowers();
+                color1.color = options.LawnMower1Color;
+                color2.color = options.LawnMower2Color;
+                points1.text = ":" + lawnMowers[0].GetPoints();
+                points2.text = ":" + lawnMowers[1].GetPoints();
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using DefaultNamespace;
+﻿using System.Net.NetworkInformation;
+using DefaultNamespace;
 using System;
 using System.Collections;
 using Unity.Mathematics;
@@ -10,11 +11,13 @@ using Photon.Pun;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject mapPrefab;
-    [SerializeField] private GameObject LawnMowerPrefab;
+    [SerializeField] private GameObject lawnMowerPrefab;
+    [SerializeField] private GameObject gameMenuPrefab;
 
     private Options options;
     private bool gameSceneActive = false;
     private LawnMower[] lawnMowers;
+    private Map map;
     void Start()
     {
         options = GetComponent<Options>();
@@ -35,14 +38,12 @@ public class GameManager : MonoBehaviour
     private void StartGame()
     {
         //Map
-        Map map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
+        map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
         map.Init();
         //Lawnmowers
-        lawnMowers=new LawnMower[2];
-        lawnMowers[0] = Instantiate(LawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-        lawnMowers[1] = Instantiate(LawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-        lawnMowers[0].SetMap(map);
-        lawnMowers[1].SetMap(map);
+        lawnMowers = new LawnMower[2];
+        lawnMowers[0] = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+        lawnMowers[1] = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
         lawnMowers[0].GetComponentInChildren<SpriteRenderer>().color = options.LawnMower1Color;
         lawnMowers[1].GetComponentInChildren<SpriteRenderer>().color = options.LawnMower2Color;
 
@@ -57,9 +58,24 @@ public class GameManager : MonoBehaviour
                 lawnMowers[1].gameObject.AddComponent<AI>();
                 break;
         }
+        
+        //Menu
+        Instantiate(gameMenuPrefab);
+
     }
 
     private void OnJoinedRoom(object sender)
+    public LawnMower[] GetLawnmowers()
+    {
+        return lawnMowers;
+    }
+    
+    public bool IsGameActive()
+    {
+        return gameSceneActive;
+    }
+
+    public void LoadGame()
     {
         NetworkManager networkManager = (NetworkManager)sender;
         networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
@@ -110,7 +126,7 @@ public class GameManager : MonoBehaviour
         if (scene.name == "Menu")
         {
             SceneManager.SetActiveScene(scene);
-            if (gameSceneActive)
+            if (IsGameActive())
             {
                 SceneManager.UnloadSceneAsync("Game");
             }
@@ -137,5 +153,10 @@ public class GameManager : MonoBehaviour
         }
 
         StartNetworkGame();
+    }
+
+    public Map GetMap()
+    {
+        return map;
     }
 }

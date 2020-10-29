@@ -1,11 +1,10 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
+using UnityEngine.Tilemaps;
 
 
 public class LawnMower : MonoBehaviour
 {
-    enum Orientation
+    public enum Orientation
     {
         up = 0,
         right = 1,
@@ -13,15 +12,26 @@ public class LawnMower : MonoBehaviour
         left = 3,
     }
 
+    public delegate void LawnMowerNextPositionEvent(Vector2Int nextPosition,Orientation orientation);
+
+    public event LawnMowerNextPositionEvent OnReachedDestination;
+
+    public delegate void LawnMowerHitWallEvent(Vector2Int position,Orientation orientation);
+
+    public event LawnMowerHitWallEvent OnWallHit;
+    [SerializeField]private Transform front;
     [SerializeField]private Orientation orientation;
     [SerializeField]private int nextTurn = 0;
     [SerializeField]private Vector2Int nextTilePosition;
+    [SerializeField]private GameManager gameManager;
+
     private Map map;
-    private int points=0;
-    [SerializeField] private Transform front;
+    private int points = 0;
 
     private void Start()
     {
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        map = gameManager.GetMap();
         FindNextPosition();
         Mow();
     }
@@ -33,37 +43,46 @@ public class LawnMower : MonoBehaviour
 
     void Update()
     {
+        //is in the middle of a tile
         if (map.WorldToGrid(transform.position) == nextTilePosition &&
             map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
         {
+            Mow();
             Turn();
             nextTurn = 0;
-            Mow();
+            OnReachedDestination?.Invoke(nextTilePosition,orientation);
         }
-        
+
+        //move if does not it wall
         Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
         if (map.GetTile(frontPosition) != Map.TileType.Wall)
+        {
             transform.Translate(Vector3.up * Time.deltaTime);
-        else if(nextTurn!=0)
+        }
+        //turn if hit wall
+        else if (nextTurn != 0)
         {
             Turn();
-            nextTurn = 0;
+        }
+        //notify wall was hit to change tragectory
+        else
+        {
+            OnWallHit?.Invoke(map.WorldToGrid(transform.position),orientation);
         }
     }
 
     private void Mow()
     {
-       // Debug.Log("MOW");
         Vector2Int gridPosition = map.WorldToGrid(transform.position);
-        if (map.GetTile(gridPosition)==Map.TileType.Grass)
+        if (map.GetTile(gridPosition) == Map.TileType.Grass)
         {
             points++;
-            map.SetTile(gridPosition.x,gridPosition.y,Map.TileType.Dirt);
+            map.SetTile(gridPosition.x, gridPosition.y, Map.TileType.Dirt);
         }
     }
+
     private void FindNextPosition()
     {
-        Debug.Log("FindNext");
         nextTilePosition = map.WorldToGrid(transform.position);
         switch (orientation)
         {
@@ -85,15 +104,19 @@ public class LawnMower : MonoBehaviour
     private void Turn()
     {
         orientation = (Orientation) (((int) orientation + nextTurn) % 4);
-        
         transform.Rotate(Vector3.forward, -90 * nextTurn);
         FindNextPosition();
     }
 
+    public int GetPoints()
+    {
+        return points;
+    }
+
     public void SetNextTurn(int turn)
     {
-        if (turn == -1)
-            turn = 3;
+        if (turn <0)
+            turn = 4 + (turn%4);
         nextTurn = turn;
     }
 }

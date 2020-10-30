@@ -26,6 +26,7 @@ public class MainMenu : MonoBehaviour
 
     public void OnLocalButtonClick()
     {
+        options.GameMode = Options.GameModeType.OfflineVsAI;
         gameManager.LoadLocalGame();
     }
 
@@ -44,6 +45,7 @@ public class MainMenu : MonoBehaviour
 
     public void OnJoinButtonClick()
     {
+        options.GameMode = Options.GameModeType.Online;
         gameManager.LoadOnlineGame(RoomInputField.text);
     }
 

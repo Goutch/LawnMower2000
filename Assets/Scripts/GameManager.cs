@@ -1,12 +1,9 @@
-﻿using System.Net.NetworkInformation;
-using DefaultNamespace;
-using System;
+﻿
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static Options;
-using Photon.Pun;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -42,13 +39,14 @@ public class GameManager : MonoBehaviour
         lawnMowers[1] = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
         lawnMowers[0].GetComponentInChildren<SpriteRenderer>().color = options.LawnMower1Color;
         lawnMowers[1].GetComponentInChildren<SpriteRenderer>().color = options.LawnMower2Color;
-
+        lawnMowers[0].SetOrientation((LawnMower.Orientation)Random.Range(0,3));
+        lawnMowers[1].SetOrientation((LawnMower.Orientation)Random.Range(0,3));
         //Players
         lawnMowers[0].gameObject.AddComponent<Player>();
         switch (options.GameMode)
         {
             case Options.GameModeType.Online:
-                lawnMowers[1].gameObject.AddComponent<RemotePlayer>();
+                
                 break;
             case Options.GameModeType.OfflineVsAI:
                 lawnMowers[1].gameObject.AddComponent<AI>();
@@ -80,8 +78,6 @@ public class GameManager : MonoBehaviour
 
     public void LoadOnlineGame(string roomName)
     {
-        options.GameMode = GameModeType.Online;
-
         NetworkManager networkManager = new GameObject().AddComponent<NetworkManager>();
         networkManager.name = "NetworkManager";
         Scene scene = SceneManager.GetSceneByName("Main");
@@ -93,7 +89,6 @@ public class GameManager : MonoBehaviour
 
     public void LoadLocalGame()
     {
-        options.GameMode = GameModeType.OfflineVsAI;
         StartCoroutine(LoadLocalGameAsynchronously("Scenes/Game"));
     }
 
@@ -109,11 +104,6 @@ public class GameManager : MonoBehaviour
             SceneManager.SetActiveScene(scene);
             SceneManager.UnloadSceneAsync("Menu");
             gameSceneActive = true;
-
-            if(options.GameMode == GameModeType.OfflineVsAI)
-            {
-                StartGame();
-            }
         }
 
         if (scene.name == "Menu")
@@ -134,6 +124,7 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
+        StartGame();
     }
 
     IEnumerator LoadOnlineGameAsynchronously(string sceneName)

@@ -12,18 +12,18 @@ public class LawnMower : MonoBehaviour
         left = 3,
     }
 
-    public delegate void LawnMowerNextPositionEvent(Vector2Int nextPosition,Orientation orientation);
+    public delegate void LawnMowerNextPositionEvent(Vector2Int nextPosition, Orientation orientation);
 
     public event LawnMowerNextPositionEvent OnReachedDestination;
 
-    public delegate void LawnMowerHitWallEvent(Vector2Int position,Orientation orientation);
+    public delegate void LawnMowerHitWallEvent(Vector2Int position, Orientation orientation);
 
     public event LawnMowerHitWallEvent OnWallHit;
-    [SerializeField]private Transform front;
-    [SerializeField]private Orientation orientation;
-    [SerializeField]private int nextTurn = 0;
-    [SerializeField]private Vector2Int nextTilePosition;
-    [SerializeField]private GameManager gameManager;
+    [SerializeField] private Transform front;
+    [SerializeField] private Orientation orientation;
+    [SerializeField] private int nextTurn = 0;
+    [SerializeField] private Vector2Int nextTilePosition;
+    [SerializeField] private GameManager gameManager;
 
     private Map map;
     private int points = 0;
@@ -36,11 +36,6 @@ public class LawnMower : MonoBehaviour
         Mow();
     }
 
-    public void SetMap(Map map)
-    {
-        this.map = map;
-    }
-
     void Update()
     {
         //is in the middle of a tile
@@ -50,7 +45,7 @@ public class LawnMower : MonoBehaviour
             Mow();
             Turn();
             nextTurn = 0;
-            OnReachedDestination?.Invoke(nextTilePosition,orientation);
+            OnReachedDestination?.Invoke(nextTilePosition, orientation);
         }
 
         //move if does not it wall
@@ -63,11 +58,21 @@ public class LawnMower : MonoBehaviour
         else if (nextTurn != 0)
         {
             Turn();
+            nextTurn = 0;
         }
         //notify wall was hit to change tragectory
         else
         {
-            OnWallHit?.Invoke(map.WorldToGrid(transform.position),orientation);
+            OnWallHit?.Invoke(map.WorldToGrid(transform.position), orientation);
+        }
+    }
+
+    public void SetOrientation(Orientation orientation)
+    {
+        this.orientation = orientation;
+        for (int i = 0; i < (int) orientation; i++)
+        {
+            transform.Rotate(Vector3.forward, -90);
         }
     }
 
@@ -115,8 +120,8 @@ public class LawnMower : MonoBehaviour
 
     public void SetNextTurn(int turn)
     {
-        if (turn <0)
-            turn = 4 + (turn%4);
+        if (turn < 0)
+            turn = 4 + (turn % 4);
         nextTurn = turn;
     }
 }

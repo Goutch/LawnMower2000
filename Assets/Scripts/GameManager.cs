@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -15,7 +16,6 @@ public class GameManager : MonoBehaviour
     private bool gameSceneActive = false;
     private LawnMower[] lawnMowers;
     private Map map;
-
     void Start()
     {
         options = GetComponent<Options>();
@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     {
         //Map
         map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
-        map.Init();
+        map.Init(0);
         //Lawnmowers
         lawnMowers = new LawnMower[2];
         lawnMowers[0] = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
@@ -135,12 +135,7 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
-
-        if (operation.isDone)
-        {
-            StartNetworkGame();
-        }
-        
+        StartNetworkGame();
     }
 
     public Map GetMap()

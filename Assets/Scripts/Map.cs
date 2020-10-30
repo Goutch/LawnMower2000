@@ -22,7 +22,7 @@ public class Map : MonoBehaviour
     private Grid grid;
     private int sizeX;
     private int sizeY;
-
+    private int seed;
     private void Start()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
@@ -35,20 +35,26 @@ public class Map : MonoBehaviour
         Camera.main.orthographicSize = (tileMap.localBounds.max.y - tileMap.localBounds.min.y) / 2f;
     }
 
-    public void Init()
+    public void Init(int seed)
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         options = gameManager.GetComponent<Options>();
 
         tileMap = GetComponentInChildren<Tilemap>();
         grid = GetComponent<Grid>();
-
+        Random.InitState(seed);
         GenerateRandomMap(options.MapSize.x, options.MapSize.y);
         tileMap.CompressBounds();
     }
 
+    public int GetSeed()
+    {
+        return seed;
+    }
+    
     private void GenerateRandomMap(int sizeX, int sizeY)
     {
+
         possibleSpawnPoint = new List<Vector2Int>();
         this.sizeX = sizeX;
         this.sizeY = sizeX;

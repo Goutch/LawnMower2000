@@ -30,7 +30,7 @@ namespace DefaultNamespace
                 menuPanel.SetActive(!menuPanel.activeSelf);
             }
 
-            if (gameManager.IsGameActive())
+            if (gameManager.IsGameActive() && gameManager.GameStarted)
             {
                 LawnMower[] lawnMowers = gameManager.LawnMowers.ToArray();
                 color1.color = options.LawnMower1Color;

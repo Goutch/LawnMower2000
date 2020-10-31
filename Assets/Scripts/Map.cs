@@ -33,6 +33,7 @@ public class Map : MonoBehaviour
         grid = GetComponent<Grid>();
         Random.InitState(seed);
         GenerateRandomMap(options.MapSize.x, options.MapSize.y);
+        Random.InitState((new System.Random()).Next());
         tileMap.CompressBounds();
         Camera.main.transform.position = new Vector3(sizeX / 2f, sizeY / 2f, -1);
         Camera.main.orthographicSize = (tileMap.localBounds.max.y - tileMap.localBounds.min.y) / 2f;

@@ -1,4 +1,5 @@
 ﻿
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +17,6 @@ public class GameManager : MonoBehaviour
 
     private Options options;
     private bool gameSceneActive = false;
-    private LawnMower[] lawnMowers;
     private Map map;
 
 
@@ -30,8 +30,9 @@ public class GameManager : MonoBehaviour
     {
         if (!GameStarted)
         {
-            GameObject[] lawnMowers = GameObject.FindGameObjectsWithTag("LawnMower");
-            if (lawnMowers.Length != 0 && lawnMowers.All(l => l.GetComponent<LawnMower>().Ready))
+            LawnMowers = GameObject.FindGameObjectsWithTag("LawnMower").Select(x => x.GetComponent<LawnMower>()).ToList();
+
+            if (LawnMowers.Count != 0 && LawnMowers.All(l => l.Ready))
             {
                 GameStarted = true;
                 OnGameStart?.Invoke();
@@ -52,19 +53,10 @@ public class GameManager : MonoBehaviour
         map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
         map.Init(0);
 
-        LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-        LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+        LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower",map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
 
         lawnMower1.GetComponentInChildren<SpriteRenderer>().color = options.LawnMower1Color;
-        lawnMower2.GetComponentInChildren<SpriteRenderer>().color = options.LawnMower2Color;
         lawnMower1.SetOrientation(LawnMower.Orientation.up);
-        lawnMower2.SetOrientation(LawnMower.Orientation.up);
-
-        lawnMower1.gameObject.AddComponent<Player>();
-        lawnMower2.gameObject.AddComponent<AI>();
-
-        LawnMowers.Add(lawnMower1);
-        LawnMowers.Add(lawnMower2);
 
         Instantiate(gameMenuPrefab);
     }
@@ -86,9 +78,6 @@ public class GameManager : MonoBehaviour
         lawnMower1.gameObject.AddComponent<Player>();
         lawnMower2.gameObject.AddComponent<AI>();
 
-        LawnMowers.Add(lawnMower1);
-        LawnMowers.Add(lawnMower2);
-
         Instantiate(gameMenuPrefab);
     }
 
@@ -97,12 +86,7 @@ public class GameManager : MonoBehaviour
         NetworkManager networkManager = (NetworkManager)sender;
         networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
 
-        StartCoroutine(LoadOnlineGameAsynchronously("Scenes/Game"));
-    }
-
-    public LawnMower[] GetLawnmowers()
-    {
-        return lawnMowers;
+        StartNetworkGame();
     }
     
     public bool IsGameActive()
@@ -112,18 +96,12 @@ public class GameManager : MonoBehaviour
 
     public void LoadOnlineGame(string roomName)
     {
-        NetworkManager networkManager = new GameObject().AddComponent<NetworkManager>();
-        networkManager.name = "NetworkManager";
-        Scene scene = SceneManager.GetSceneByName("Main");
-        SceneManager.MoveGameObjectToScene(networkManager.gameObject, scene);
-
-        networkManager.OnJoinedRoomEvent += OnJoinedRoom;
-        networkManager.Connect(roomName);
+        StartCoroutine(LoadOnlineGameAsynchronously(roomName));
     }
 
     public void LoadLocalGame()
     {
-        StartCoroutine(LoadLocalGameAsynchronously("Scenes/Game"));
+        StartCoroutine(LoadLocalGameAsynchronously());
     }
 
     public void LoadMenu()
@@ -150,7 +128,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    IEnumerator LoadLocalGameAsynchronously(string sceneName)
+    IEnumerator LoadLocalGameAsynchronously()
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
 
@@ -161,7 +139,7 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
-    IEnumerator LoadOnlineGameAsynchronously(string sceneName)
+    IEnumerator LoadOnlineGameAsynchronously(string roomName)
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
 
@@ -169,7 +147,14 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
-        StartNetworkGame();
+
+        NetworkManager networkManager = new GameObject().AddComponent<NetworkManager>();
+        networkManager.name = "NetworkManager";
+        Scene scene = SceneManager.GetSceneByName("Main");
+        SceneManager.MoveGameObjectToScene(networkManager.gameObject, scene);
+
+        networkManager.OnJoinedRoomEvent += OnJoinedRoom;
+        networkManager.Connect(roomName);
     }
 
     public Map GetMap()

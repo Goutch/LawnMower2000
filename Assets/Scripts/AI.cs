@@ -23,7 +23,7 @@ public class AI : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         options = gameManager.GetComponent<Options>();
@@ -31,6 +31,7 @@ public class AI : MonoBehaviour
         lawnMower = GetComponent<LawnMower>();
         lawnMower.OnReachedDestination += OnReachedDestination;
         lawnMower.OnWallHit += OnHitWall;
+        lawnMower.Ready = true;
     }
 
     private void OnReachedDestination(Vector2Int position, LawnMower.Orientation orientation)

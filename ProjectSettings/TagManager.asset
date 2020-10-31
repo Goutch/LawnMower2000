@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GameManager
   - Map
+  - LawnMower
   layers:
   - Default
   - TransparentFX

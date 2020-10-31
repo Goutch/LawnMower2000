@@ -32,7 +32,7 @@ namespace DefaultNamespace
 
             if (gameManager.IsGameActive())
             {
-                LawnMower[] lawnMowers = gameManager.GetLawnmowers();
+                LawnMower[] lawnMowers = gameManager.LawnMowers.ToArray();
                 color1.color = options.LawnMower1Color;
                 color2.color = options.LawnMower2Color;
                 points1.text = ":" + lawnMowers[0].GetPoints();

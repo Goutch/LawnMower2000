@@ -15,5 +15,6 @@ public class Options : MonoBehaviour
     public KeyCode ContinueKey { private set; get; }  = KeyCode.W;
     public KeyCode TurnLeftKey { private set; get; } = KeyCode.A;
     public KeyCode TurnRightKey { private set; get; } = KeyCode.D;
+    public KeyCode ReadyKey { private set; get; } = KeyCode.Return;
     public Vector2Int MapSize { private set; get; } = new Vector2Int(16, 16);
 }

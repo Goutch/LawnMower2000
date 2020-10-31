@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
         options = GameObject.FindWithTag("GameManager").GetComponent<Options>();
         lawnMower = GetComponent<LawnMower>();
     }
-    
+
     void Update()
     {
         int turn = 0;
@@ -23,6 +23,10 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(options.ContinueKey))
         {
             lawnMower.SetNextTurn(0);
+        }
+        if (Input.GetKeyDown(options.ReadyKey))
+        {
+            lawnMower.Ready = true;
         }
     }
 }

@@ -28,9 +28,21 @@ public class LawnMower : MonoBehaviour
     private Map map;
     private int points = 0;
 
-    private void Start()
+    public bool Ready { get; set; } = false;
+
+    void OnEnable()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        gameManager.OnGameStart += OnGameStart;
+    }
+
+    void OnDisable()
+    {
+        gameManager.OnGameStart -= OnGameStart;
+    }
+
+    private void OnGameStart()
+    {
         map = gameManager.GetMap();
         FindNextPosition();
         Mow();
@@ -38,32 +50,35 @@ public class LawnMower : MonoBehaviour
 
     void Update()
     {
-        //is in the middle of a tile
-        if (map.WorldToGrid(transform.position) == nextTilePosition &&
-            map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
+        if (gameManager.GameStarted)
         {
-            Mow();
-            Turn();
-            nextTurn = 0;
-            OnReachedDestination?.Invoke(nextTilePosition, orientation);
-        }
+            //is in the middle of a tile
+            if (map.WorldToGrid(transform.position) == nextTilePosition &&
+                map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
+            {
+                Mow();
+                Turn();
+                nextTurn = 0;
+                OnReachedDestination?.Invoke(nextTilePosition, orientation);
+            }
 
-        //move if does not it wall
-        Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
-        if (map.GetTile(frontPosition) != Map.TileType.Wall)
-        {
-            transform.Translate(Vector3.up * Time.deltaTime);
-        }
-        //turn if hit wall
-        else if (nextTurn != 0)
-        {
-            Turn();
-            nextTurn = 0;
-        }
-        //notify wall was hit to change tragectory
-        else
-        {
-            OnWallHit?.Invoke(map.WorldToGrid(transform.position), orientation);
+            //move if does not it wall
+            Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
+            if (map.GetTile(frontPosition) != Map.TileType.Wall)
+            {
+                transform.Translate(Vector3.up * Time.deltaTime);
+            }
+            //turn if hit wall
+            else if (nextTurn != 0)
+            {
+                Turn();
+                nextTurn = 0;
+            }
+            //notify wall was hit to change tragectory
+            else
+            {
+                OnWallHit?.Invoke(map.WorldToGrid(transform.position), orientation);
+            }
         }
     }
 

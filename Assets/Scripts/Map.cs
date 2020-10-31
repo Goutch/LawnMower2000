@@ -23,17 +23,6 @@ public class Map : MonoBehaviour
     private int sizeX;
     private int sizeY;
     private int seed;
-    private void Start()
-    {
-        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        options = gameManager.GetComponent<Options>();
-
-        tileMap = GetComponentInChildren<Tilemap>();
-        grid = GetComponent<Grid>();
-
-        Camera.main.transform.position = new Vector3(sizeX / 2f, sizeY / 2f, -1);
-        Camera.main.orthographicSize = (tileMap.localBounds.max.y - tileMap.localBounds.min.y) / 2f;
-    }
 
     public void Init(int seed)
     {
@@ -45,6 +34,8 @@ public class Map : MonoBehaviour
         Random.InitState(seed);
         GenerateRandomMap(options.MapSize.x, options.MapSize.y);
         tileMap.CompressBounds();
+        Camera.main.transform.position = new Vector3(sizeX / 2f, sizeY / 2f, -1);
+        Camera.main.orthographicSize = (tileMap.localBounds.max.y - tileMap.localBounds.min.y) / 2f;
     }
 
     public int GetSeed()

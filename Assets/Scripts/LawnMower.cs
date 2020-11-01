@@ -19,9 +19,15 @@ public class LawnMower : MonoBehaviour
     public delegate void LawnMowerHitWallEvent(Vector2Int position, Orientation orientation);
 
     public event LawnMowerHitWallEvent OnWallHit;
+
+    public delegate void OnChangeNextTurnHander();
+    public event OnChangeNextTurnHander OnChangeNextTurn;
+
+    private int nextTurn = 0;
+    public int NextTurn { get { return nextTurn; } set { nextTurn = value; if (value != 0) OnChangeNextTurn?.Invoke(); } }
+
     [SerializeField] private Transform front;
     [SerializeField] private Orientation orientation;
-    [SerializeField] private int nextTurn = 0;
     [SerializeField] private Vector2Int nextTilePosition;
     [SerializeField] private GameManager gameManager;
 
@@ -30,10 +36,17 @@ public class LawnMower : MonoBehaviour
 
     public bool Ready { get; set; } = false;
 
+    private SpriteRenderer spriteRenderer = null;
+
+    private Color color = Color.white;
+    public Color Color { get { return color; } set { color = value; spriteRenderer.color = value; } }
+
     void OnEnable()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         gameManager.OnGameStart += OnGameStart;
+
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void OnDisable()
@@ -58,7 +71,7 @@ public class LawnMower : MonoBehaviour
             {
                 Mow();
                 Turn();
-                nextTurn = 0;
+                NextTurn = 0;
                 OnReachedDestination?.Invoke(nextTilePosition, orientation);
             }
 
@@ -69,10 +82,10 @@ public class LawnMower : MonoBehaviour
                 transform.Translate(Vector3.up * Time.deltaTime);
             }
             //turn if hit wall
-            else if (nextTurn != 0)
+            else if (NextTurn != 0)
             {
                 Turn();
-                nextTurn = 0;
+                NextTurn = 0;
             }
             //notify wall was hit to change tragectory
             else
@@ -123,8 +136,8 @@ public class LawnMower : MonoBehaviour
 
     private void Turn()
     {
-        orientation = (Orientation) (((int) orientation + nextTurn) % 4);
-        transform.Rotate(Vector3.forward, -90 * nextTurn);
+        orientation = (Orientation) (((int) orientation + NextTurn) % 4);
+        transform.Rotate(Vector3.forward, -90 * NextTurn);
         FindNextPosition();
     }
 
@@ -137,6 +150,8 @@ public class LawnMower : MonoBehaviour
     {
         if (turn < 0)
             turn = 4 + (turn % 4);
-        nextTurn = turn;
+        NextTurn = turn;
     }
+
+
 }

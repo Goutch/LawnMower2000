@@ -5,12 +5,11 @@ namespace DefaultNamespace
 {
     public class GameMenu : MonoBehaviour
     {
-        [SerializeField] private GameObject menuPanel;
-        [SerializeField] private Button backToMenuButton;
-        [SerializeField] private Text points1;
-        [SerializeField] private Text points2;
-        [SerializeField] private Image color1;
-        [SerializeField] private Image color2;
+        [SerializeField] private GameObject menuPanel = null;
+        [SerializeField] private Button backToMenuButton = null;
+        [SerializeField] private GameObject pointsPanel = null;
+        [SerializeField] private GameObject statsPrefab = null;
+
         private GameManager gameManager;
         private Options options;
 
@@ -21,6 +20,24 @@ namespace DefaultNamespace
             options = gameManager.GetComponent<Options>();
             backToMenuButton.onClick.AddListener(OnBackToMenuButtonClick);
             menuPanel.SetActive(false);
+
+            gameManager.OnGameStart += GameManager_OnGameStart;
+        }
+
+        public void OnDisable()
+        {
+            gameManager.OnGameStart -= GameManager_OnGameStart;
+        }
+
+        private void GameManager_OnGameStart()
+        {
+            int position = 0;
+            foreach(LawnMower lawnMower in gameManager.LawnMowers)
+            {
+                StatsUpdate stats = Instantiate(statsPrefab, pointsPanel.transform).GetComponent<StatsUpdate>();
+                stats.LawnMower = lawnMower;
+                stats.Position = position++;
+            }
         }
 
         private void Update()
@@ -28,15 +45,6 @@ namespace DefaultNamespace
             if (Input.GetKeyDown(options.InGameMenuButtonKey))
             {
                 menuPanel.SetActive(!menuPanel.activeSelf);
-            }
-
-            if (gameManager.IsGameActive() && gameManager.GameStarted)
-            {
-                LawnMower[] lawnMowers = gameManager.LawnMowers.ToArray();
-                color1.color = options.LawnMower1Color;
-                color2.color = options.LawnMower2Color;
-                points1.text = ":" + lawnMowers[0].GetPoints();
-                points2.text = ":" + lawnMowers[1].GetPoints();
             }
         }
 

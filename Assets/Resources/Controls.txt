@@ -1,0 +1,3 @@
+R=KeyCode.W
+L=KeyCode.A
+S=KeyCode.Return

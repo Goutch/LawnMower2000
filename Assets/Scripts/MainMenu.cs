@@ -6,6 +6,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject MainMenuPanel = null;
     [SerializeField] private GameObject LocalOnlineMenuPanel = null;
     [SerializeField] private GameObject JoinRoomMenuPanel = null;
+    [SerializeField] private GameObject OptionsMenuPanel = null;
 
     [SerializeField] private InputField RoomInputField = null;
 
@@ -54,4 +55,19 @@ public class MainMenu : MonoBehaviour
         LocalOnlineMenuPanel.SetActive(true);
         JoinRoomMenuPanel.SetActive(false);
     }
+
+    public void OnOptionsButtonClick()
+    {
+        MainMenuPanel.SetActive(false);
+        OptionsMenuPanel.SetActive(true);
+    }
+
+    public void OnBackButtonOptionsClick()
+    {
+        OptionsMenuPanel.SetActive(false);
+        MainMenuPanel.SetActive(true);
+    }
+    
+    
+
 }

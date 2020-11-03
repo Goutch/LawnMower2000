@@ -27,7 +27,7 @@ public class LawnMower : MonoBehaviour
     public int NextTurn { get { return nextTurn; } set { nextTurn = value; if (value != 0) OnChangeNextTurn?.Invoke(); } }
 
     [SerializeField] private Transform front;
-    [SerializeField] private Vector2Int nextTilePosition;
+    private Vector2Int nextTilePosition;
     [SerializeField] private GameManager gameManager;
 
     private Map map;
@@ -43,6 +43,7 @@ public class LawnMower : MonoBehaviour
     public Orientation OrientationLawnMower { get; set;}
 
     public int NumberOfTurn { get; set; } = 0;
+    public Vector2Int NextTilePosition { get => nextTilePosition; set => nextTilePosition = value; }
 
     void OnEnable()
     {

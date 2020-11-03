@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     {
         options = GameObject.FindWithTag("GameManager").GetComponent<Options>();
         lawnMower = GetComponent<LawnMower>();
+        Camera.current.GetComponent<CameraMovement>().ObjectToFollow = gameObject.transform;
     }
 
     void Update()

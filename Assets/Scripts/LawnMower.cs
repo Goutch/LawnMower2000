@@ -27,7 +27,6 @@ public class LawnMower : MonoBehaviour
     public int NextTurn { get { return nextTurn; } set { nextTurn = value; if (value != 0) OnChangeNextTurn?.Invoke(); } }
 
     [SerializeField] private Transform front;
-    [SerializeField] private Orientation orientation;
     [SerializeField] private Vector2Int nextTilePosition;
     [SerializeField] private GameManager gameManager;
 
@@ -40,6 +39,10 @@ public class LawnMower : MonoBehaviour
 
     private Color color = Color.white;
     public Color Color { get { return color; } set { color = value; spriteRenderer.color = value; } }
+
+    public Orientation OrientationLawnMower { get; set;}
+
+    public int NumberOfTurn { get; set; } = 0;
 
     void OnEnable()
     {
@@ -63,6 +66,8 @@ public class LawnMower : MonoBehaviour
 
     void Update()
     {
+        transform.rotation = Quaternion.AngleAxis((int)OrientationLawnMower * -90, Vector3.forward);
+
         if (gameManager.GameStarted)
         {
             //is in the middle of a tile
@@ -72,7 +77,7 @@ public class LawnMower : MonoBehaviour
                 Mow();
                 Turn();
                 NextTurn = 0;
-                OnReachedDestination?.Invoke(nextTilePosition, orientation);
+                OnReachedDestination?.Invoke(nextTilePosition, OrientationLawnMower);
             }
 
             //move if does not it wall
@@ -90,17 +95,8 @@ public class LawnMower : MonoBehaviour
             //notify wall was hit to change tragectory
             else
             {
-                OnWallHit?.Invoke(map.WorldToGrid(transform.position), orientation);
+                OnWallHit?.Invoke(map.WorldToGrid(transform.position), OrientationLawnMower);
             }
-        }
-    }
-
-    public void SetOrientation(Orientation orientation)
-    {
-        this.orientation = orientation;
-        for (int i = 0; i < (int) orientation; i++)
-        {
-            transform.Rotate(Vector3.forward, -90);
         }
     }
 
@@ -117,7 +113,7 @@ public class LawnMower : MonoBehaviour
     private void FindNextPosition()
     {
         nextTilePosition = map.WorldToGrid(transform.position);
-        switch (orientation)
+        switch (OrientationLawnMower)
         {
             case Orientation.down:
                 nextTilePosition.y -= 1;
@@ -136,8 +132,8 @@ public class LawnMower : MonoBehaviour
 
     private void Turn()
     {
-        orientation = (Orientation) (((int) orientation + NextTurn) % 4);
-        transform.Rotate(Vector3.forward, -90 * NextTurn);
+        NumberOfTurn++;
+        OrientationLawnMower = (Orientation)(((int)OrientationLawnMower + NextTurn) % 4);
         FindNextPosition();
     }
 

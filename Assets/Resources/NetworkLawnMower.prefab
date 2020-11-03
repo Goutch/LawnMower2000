@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   front: {fileID: 5678620538964495142}
-  orientation: 0
   nextTilePosition: {x: 0, y: 0}
   gameManager: {fileID: 0}
 --- !u!1 &1304567969485933027

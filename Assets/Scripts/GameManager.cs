@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
 
         LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower",map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
 
-        lawnMower1.SetOrientation(LawnMower.Orientation.up);
+        lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
         lawnMower1.gameObject.AddComponent<Player>();
 
         Instantiate(gameMenuPrefab);
@@ -68,15 +68,15 @@ public class GameManager : MonoBehaviour
         map.Init(0);
 
         LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-        LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+        //LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 
         lawnMower1.Color = options.LawnMower1Color;
-        lawnMower2.Color = options.LawnMower2Color;
-        lawnMower1.SetOrientation(LawnMower.Orientation.up);
-        lawnMower2.SetOrientation(LawnMower.Orientation.up);
+        //lawnMower2.Color = options.LawnMower2Color;
+        lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
+        //lawnMower2.OrientationLawnMower = LawnMower.Orientation.up;
 
         lawnMower1.gameObject.AddComponent<Player>();
-        lawnMower2.gameObject.AddComponent<AI>();
+        //lawnMower2.gameObject.AddComponent<AI>();
 
         Instantiate(gameMenuPrefab);
     }

@@ -5,6 +5,8 @@ public class Player : MonoBehaviour
     private LawnMower lawnMower;
     private Options options;
 
+    private float lastTurned = 0;
+
     void Start()
     {
         options = GameObject.FindWithTag("GameManager").GetComponent<Options>();
@@ -20,6 +22,7 @@ public class Player : MonoBehaviour
         if (turn != 0)
         {
             lawnMower.SetNextTurn(turn);
+            lastTurned = Time.time;
         }
         if (Input.GetKeyDown(options.ContinueKey))
         {

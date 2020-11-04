@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.ComponentModel;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 
 public class Options : MonoBehaviour
@@ -25,6 +28,11 @@ public class Options : MonoBehaviour
     
     private Hashtable bindings;
 
+    private void Start()
+    {
+        ReadKeyBindings();
+    }
+
     public void ReadKeyBindings()
     {
         string path = "Assets/Resources/Controls.txt";
@@ -35,7 +43,7 @@ public class Options : MonoBehaviour
         while ((line = reader.ReadLine()) != null)
         {
             string[] txtLine = line.Split('=');
-            bindings.Add(txtLine[0],txtLine[1]);
+            bindings.Add(txtLine[0], System.Enum.Parse(typeof(KeyCode), txtLine[1]) );
         }
         
         Debug.Log(reader.ReadToEnd());
@@ -44,6 +52,10 @@ public class Options : MonoBehaviour
         if (bindings.Count < AMOUNT_OF_KEY_BINDINGS)
         {
             SetDefaultKeyBindings();
+        }
+        else
+        {
+            ApplyKeyBindings();
         }
     }
 
@@ -54,13 +66,17 @@ public class Options : MonoBehaviour
         ReadyKey = (KeyCode) bindings["S"];
         InGameMenuButtonKey = (KeyCode) bindings["M"];
         ContinueKey = (KeyCode) bindings["C"];
-
-
+        
+        WriteKeyBindings();
     }
 
-    private void SetKeyBinding(string key, KeyCode keyCode)
+    public void SetKeyBinding(string key, KeyCode keyCode)
     {
         bindings[key] = keyCode;
+    }
+
+    private void WriteKeyBindings()
+    {
         string path = "Assets/Resources/Controls.txt";
         StreamWriter writer = new StreamWriter(path, false);
         
@@ -71,20 +87,20 @@ public class Options : MonoBehaviour
             writer.WriteLine(k+"="+bindings[k]);
         }
         writer.Close();
-        ApplyKeyBindings();
     }
 
-    private void SetDefaultKeyBindings()
+    public void SetDefaultKeyBindings()
     {
         string path = "Assets/Resources/Controls.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("R=KeyCode.D");
-        writer.WriteLine("L=KeyCode.A");
-        writer.WriteLine("S=KeyCode.Return");
-        writer.WriteLine("M=KeyCode.Escape");
-        writer.WriteLine("C=KeyCode.W");
+        writer.WriteLine("R=D");
+        writer.WriteLine("L=A");
+        writer.WriteLine("S=Return");
+        writer.WriteLine("M=Escape");
+        writer.WriteLine("C=W");
+        writer.Close();
         
-        ApplyKeyBindings();
+        ReadKeyBindings();
     }
 
 }

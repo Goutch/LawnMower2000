@@ -44,6 +44,7 @@ public class LawnMower : MonoBehaviour
 
     public int NumberOfTurn { get; set; } = 0;
     public Vector2Int NextTilePosition { get => nextTilePosition; set => nextTilePosition = value; }
+    public int Points { get => points; set => points = value; }
 
     void OnEnable()
     {
@@ -106,7 +107,7 @@ public class LawnMower : MonoBehaviour
         Vector2Int gridPosition = map.WorldToGrid(transform.position);
         if (map.GetTile(gridPosition) == Map.TileType.Grass)
         {
-            points++;
+            Points++;
             map.SetTile(gridPosition.x, gridPosition.y, Map.TileType.Dirt);
         }
     }
@@ -140,7 +141,7 @@ public class LawnMower : MonoBehaviour
 
     public int GetPoints()
     {
-        return points;
+        return Points;
     }
 
     public void SetNextTurn(int turn)

@@ -24,7 +24,7 @@ public class NetworkLawnMower : MonoBehaviourPun, IPunObservable
     {
         if(photonView.IsMine)
         {
-            photonView.RPC("ChangeTurnRPC", RpcTarget.Others, new object[] { lawnMower.NextTurn, lawnMower.NumberOfTurn, lawnMower.OrientationLawnMower, lawnMower.transform.position, lawnMower.NextTilePosition.x, lawnMower.NextTilePosition.y } as object);
+            photonView.RPC("ChangeTurnRPC", RpcTarget.Others, new object[] { lawnMower.NextTurn, lawnMower.NumberOfTurn, lawnMower.OrientationLawnMower, lawnMower.transform.position, lawnMower.NextTilePosition.x, lawnMower.NextTilePosition.y, lawnMower.Points } as object);
         }
     }
 
@@ -50,6 +50,7 @@ public class NetworkLawnMower : MonoBehaviourPun, IPunObservable
             lawnMower.OrientationLawnMower = (LawnMower.Orientation)objectArray[2];
             lawnMower.transform.position = (Vector3)objectArray[3];
             lawnMower.NextTilePosition = new Vector2Int((int)objectArray[4], (int)objectArray[5]);
+            lawnMower.Points = (int)objectArray[5];
         }
         else
         {

@@ -1,5 +1,5 @@
 L=A
-M=Escape
 R=D
-C=W
 S=Return
+C=W
+M=Escape

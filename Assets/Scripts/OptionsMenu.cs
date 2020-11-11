@@ -44,6 +44,7 @@ public class OptionsMenu : MonoBehaviour
     public void OnDefaultButtonClicked()
     {
         options.SetDefaultKeyBindings();
+        setAllKeysBindingText();
     }
 
     private void SetKeyBinding(string key, KeyCode keyCode)
@@ -116,6 +117,11 @@ public class OptionsMenu : MonoBehaviour
         keyBindingText.Add("R", RightKeyText);
         keyBindingText.Add("C", ContinueKeyText);
         keyBindingText.Add("S",StartKeyText);
+        setAllKeysBindingText();
+    }
+
+    private void setAllKeysBindingText()
+    {
         foreach (string k in keyBindingText.Keys)
         {
             setKeyBindingTextValue(k);

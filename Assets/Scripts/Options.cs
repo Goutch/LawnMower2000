@@ -103,4 +103,9 @@ public class Options : MonoBehaviour
         ReadKeyBindings();
     }
 
+    public KeyCode getKeyBinding(string key)
+    {
+        return (KeyCode)bindings[key];
+    }
+
 }

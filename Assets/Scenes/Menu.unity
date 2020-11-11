@@ -1021,7 +1021,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8001bced68a47cc83ec880f7c926a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  KeyBindingTimeInSeconds: 30
+  KeyBindingTimeInSeconds: 3
+  LeftKeyText: {fileID: 2031027236}
+  MenuKeyText: {fileID: 822297557}
+  RightKeyText: {fileID: 1685012040}
+  ContinueKeyText: {fileID: 1459755892}
+  StartKeyText: {fileID: 1349481189}
 --- !u!1 &533580661
 GameObject:
   m_ObjectHideFlags: 0

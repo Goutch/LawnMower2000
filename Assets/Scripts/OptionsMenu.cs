@@ -24,6 +24,10 @@ public class OptionsMenu : MonoBehaviour
     private bool keyBindingChanged;
     private Hashtable keyBindingText;
     private bool waitingForKey;
+    private Coroutine waitingForKey_Coroutine;
+    private Coroutine timer_Coroutine;
+    private string previous_KeyId;
+    private Hashtable keyBindingCache;
     
     private void Start()
     {
@@ -32,38 +36,54 @@ public class OptionsMenu : MonoBehaviour
         keyBindingChanged = false;
         keyBindingText = new Hashtable();
         waitingForKey = false;
-        initKeyBindingText();
+        previous_KeyId = "L";
+        keyBindingCache = new Hashtable();
+        InitKeyBindingCache();
+        InitKeyBindingText();
     }
 
     public void OnApplyButtonClicked()
     {
         options.ApplyKeyBindings();
+        UpdateKeyBindingCache();
         keyBindingChanged = false;
     }
 
     public void OnDefaultButtonClicked()
     {
         options.SetDefaultKeyBindings();
-        setAllKeysBindingText();
+        UpdateKeyBindingCache();
+        SetAllKeysBindingText();
     }
 
     private void SetKeyBinding(string key, KeyCode keyCode)
     {
         options.SetKeyBinding(key,keyCode);
-        setKeyBindingTextValue(key);
+        SetKeyBindingTextValue(key);
         keyBindingChanged = true;
     }
 
     public void OnKeyBindingButtonClicked(string id)
     {
-       StartCoroutine(waitForKey(id));
+        if (waitingForKey_Coroutine != null)
+        {
+            StopCoroutine(waitingForKey_Coroutine);
+            if (timer_Coroutine != null)
+            {
+                StopCoroutine(timer_Coroutine);
+            }
+            SetKeyBindingTextValueFromCache(previous_KeyId);
+        }
+
+        previous_KeyId = id;
+        waitingForKey_Coroutine = StartCoroutine(WaitForKey(id));
     }
 
-    IEnumerator waitForKey(string id)
+    IEnumerator WaitForKey(string id)
     {
         bool keyBindingChanged = false;
         waitingForKey = true;
-        StartCoroutine(keyBindingTimer(id));
+        timer_Coroutine = StartCoroutine(KeyBindingTimer(id));
         while (waitingForKey)
         {
             if(Input.anyKey)
@@ -72,6 +92,7 @@ public class OptionsMenu : MonoBehaviour
                 {
                     if (Input.GetKey(k))
                     {
+                        keyBindingCache[id] = k;
                         pressedKey = k;
                         waitingForKey = false;
                         keyBindingChanged = true;
@@ -89,11 +110,11 @@ public class OptionsMenu : MonoBehaviour
         }
         else
         {
-            setKeyBindingTextValue(id);
+            SetKeyBindingTextValue(id);
         }
     }
 
-    IEnumerator keyBindingTimer(string id)
+    IEnumerator KeyBindingTimer(string id)
     {
         int timer = KeyBindingTimeInSeconds;
         while (timer > 0 && waitingForKey)
@@ -105,26 +126,48 @@ public class OptionsMenu : MonoBehaviour
         waitingForKey = false;
     }
 
-    private void setKeyBindingTextValue(string key)
+    private void SetKeyBindingTextValue(string key)
     {
        ((Text) keyBindingText[key]).text = options.getKeyBinding(key).ToString();
     }
 
-    private void initKeyBindingText()
+    private void SetKeyBindingTextValueFromCache(string key)
+    {
+        ((Text) keyBindingText[key]).text = keyBindingCache[key].ToString();
+    }
+
+    private void InitKeyBindingText()
     {
         keyBindingText.Add("L",LeftKeyText);
         keyBindingText.Add("M",MenuKeyText);
         keyBindingText.Add("R", RightKeyText);
         keyBindingText.Add("C", ContinueKeyText);
         keyBindingText.Add("S",StartKeyText);
-        setAllKeysBindingText();
+        SetAllKeysBindingText();
     }
 
-    private void setAllKeysBindingText()
+    private void SetAllKeysBindingText()
     {
         foreach (string k in keyBindingText.Keys)
         {
-            setKeyBindingTextValue(k);
+            SetKeyBindingTextValue(k);
+        }
+    }
+
+    private void InitKeyBindingCache()
+    {
+        keyBindingCache.Add("L",options.getKeyBinding("L"));
+        keyBindingCache.Add("M",options.getKeyBinding("M"));
+        keyBindingCache.Add("R",options.getKeyBinding("R"));
+        keyBindingCache.Add("C",options.getKeyBinding("C"));
+        keyBindingCache.Add("S",options.getKeyBinding("S"));
+    }
+
+    private void UpdateKeyBindingCache()
+    {
+        foreach (string k in keyBindingCache.Keys)
+        {
+            keyBindingCache[k] = options.getKeyBinding(k);
         }
     }
 

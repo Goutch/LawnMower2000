@@ -21,10 +21,20 @@ public class LawnMower : MonoBehaviour
     public event LawnMowerHitWallEvent OnWallHit;
 
     public delegate void OnChangeNextTurnHander();
+
     public event OnChangeNextTurnHander OnChangeNextTurn;
 
     private int nextTurn = 0;
-    public int NextTurn { get { return nextTurn; } set { nextTurn = value; if (value != 0) OnChangeNextTurn?.Invoke(); } }
+
+    public int NextTurn
+    {
+        get { return nextTurn; }
+        set
+        {
+            nextTurn = value;
+            if (value != 0) OnChangeNextTurn?.Invoke();
+        }
+    }
 
     [SerializeField] private Transform front;
     private Vector2Int nextTilePosition;
@@ -38,13 +48,32 @@ public class LawnMower : MonoBehaviour
     private SpriteRenderer spriteRenderer = null;
 
     private Color color = Color.white;
-    public Color Color { get { return color; } set { color = value; spriteRenderer.color = value; } }
 
-    public Orientation OrientationLawnMower { get; set;}
+    public Color Color
+    {
+        get { return color; }
+        set
+        {
+            color = value;
+            spriteRenderer.color = value;
+        }
+    }
+
+    public Orientation OrientationLawnMower { get; set; }
 
     public int NumberOfTurn { get; set; } = 0;
-    public Vector2Int NextTilePosition { get => nextTilePosition; set => nextTilePosition = value; }
-    public int Points { get => points; set => points = value; }
+
+    public Vector2Int NextTilePosition
+    {
+        get => nextTilePosition;
+        set => nextTilePosition = value;
+    }
+
+    public int Points
+    {
+        get => points;
+        set => points = value;
+    }
 
     void OnEnable()
     {
@@ -68,27 +97,17 @@ public class LawnMower : MonoBehaviour
 
     void Update()
     {
-        transform.rotation = Quaternion.AngleAxis((int)OrientationLawnMower * -90, Vector3.forward);
+        transform.rotation = Quaternion.AngleAxis((int) OrientationLawnMower * -90, Vector3.forward);
 
         if (gameManager.GameStarted)
         {
-            //is in the middle of a tile
-            if (map.WorldToGrid(transform.position) == nextTilePosition &&
-                map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
-            {
-                Mow();
-                Turn();
-                NextTurn = 0;
-                OnReachedDestination?.Invoke(nextTilePosition, OrientationLawnMower);
-            }
-
             //move if does not it wall
             Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
             if (map.GetTile(frontPosition) != Map.TileType.Wall)
             {
                 transform.Translate(Vector3.up * Time.deltaTime);
             }
-            //turn if hit wall
+            //turn if hit wall and has next turn
             else if (NextTurn != 0)
             {
                 Turn();
@@ -98,6 +117,16 @@ public class LawnMower : MonoBehaviour
             else
             {
                 OnWallHit?.Invoke(map.WorldToGrid(transform.position), OrientationLawnMower);
+            }
+
+            //is in the middle of a tile
+            if (map.WorldToGrid(transform.position) == nextTilePosition &&
+                map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
+            {
+                Mow();
+                Turn();
+                NextTurn = 0;
+                OnReachedDestination?.Invoke(nextTilePosition, OrientationLawnMower);
             }
         }
     }
@@ -135,7 +164,7 @@ public class LawnMower : MonoBehaviour
     private void Turn()
     {
         NumberOfTurn++;
-        OrientationLawnMower = (Orientation)(((int)OrientationLawnMower + NextTurn) % 4);
+        OrientationLawnMower = (Orientation) (((int) OrientationLawnMower + NextTurn) % 4);
         FindNextPosition();
     }
 
@@ -150,6 +179,4 @@ public class LawnMower : MonoBehaviour
             turn = 4 + (turn % 4);
         NextTurn = turn;
     }
-
-
 }

@@ -1,9 +1,9 @@
-﻿
-using Photon.Pun;
+﻿using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,24 +19,45 @@ public class GameManager : MonoBehaviour
     private bool gameSceneActive = false;
     private Map map;
 
-
     public delegate void OnGameStartHandler();
+
     public event OnGameStartHandler OnGameStart;
 
+    public delegate void OnGameTimeChangeHandler(float time);
+
+    public event OnGameTimeChangeHandler OnGameTimeChange;
     public bool GameStarted { private set; get; } = false;
+    public bool GameFinished { private set; get; } = false;
     public List<LawnMower> LawnMowers { private set; get; } = new List<LawnMower>();
+
+    private float gameTime = 0f;
 
     void Update()
     {
-        if (!GameStarted)
+        if (!GameStarted && !GameFinished)
         {
             LawnMowers = GameObject.FindGameObjectsWithTag("LawnMower").Select(x => x.GetComponent<LawnMower>()).ToList();
 
             if (LawnMowers.Count != 0 && LawnMowers.All(l => l.Ready))
             {
                 GameStarted = true;
+
+                gameTime = ((options.MapSize.x * options.MapSize.y) / LawnMowers.Count);
                 OnGameStart?.Invoke();
             }
+        }
+
+        if (GameStarted)
+        {
+            gameTime -= Time.deltaTime;
+            if (gameTime < 0)
+            {
+                gameTime = 0;
+                GameStarted = false;
+                GameFinished = true;
+            }
+
+            OnGameTimeChange?.Invoke(gameTime);
         }
     }
 
@@ -53,7 +74,7 @@ public class GameManager : MonoBehaviour
         map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
         map.Init(0);
 
-        LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower",map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
+        LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower", map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
 
         lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
         lawnMower1.gameObject.AddComponent<Player>();
@@ -68,27 +89,27 @@ public class GameManager : MonoBehaviour
         map.Init(0);
 
         LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-        //LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+        LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 
         lawnMower1.Color = options.LawnMower1Color;
-        //lawnMower2.Color = options.LawnMower2Color;
+        lawnMower2.Color = options.LawnMower2Color;
         lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
-        //lawnMower2.OrientationLawnMower = LawnMower.Orientation.up;
+        lawnMower2.OrientationLawnMower = LawnMower.Orientation.up;
 
         lawnMower1.gameObject.AddComponent<Player>();
-        //lawnMower2.gameObject.AddComponent<AI>();
+        lawnMower2.gameObject.AddComponent<AI>();
 
         Instantiate(gameMenuPrefab);
     }
 
     private void OnJoinedRoom(object sender)
     {
-        NetworkManager networkManager = (NetworkManager)sender;
+        NetworkManager networkManager = (NetworkManager) sender;
         networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
 
         StartNetworkGame();
     }
-    
+
     public bool IsGameActive()
     {
         return gameSceneActive;
@@ -136,6 +157,7 @@ public class GameManager : MonoBehaviour
         {
             yield return null;
         }
+
         StartGame();
     }
 

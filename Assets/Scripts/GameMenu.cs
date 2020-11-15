@@ -33,6 +33,7 @@ namespace DefaultNamespace
         public void OnDisable()
         {
             gameManager.OnGameStart -= GameManager_OnGameStart;
+            gameManager.OnGameTimeChange -= GameManager_OnGameTimeChange;
         }
 
         private void GameManager_OnGameStart()

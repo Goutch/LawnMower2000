@@ -37,14 +37,12 @@ public class AI : MonoBehaviour
     private void OnReachedDestination(Vector2Int position, LawnMower.Orientation orientation)
     {
         int next = FindNextMove(position, orientation);
-        Debug.Log("OnMiddle:"+next);
         lawnMower.SetNextTurn(next);
     }
 
     private void OnHitWall(Vector2Int position, LawnMower.Orientation orientation)
     {
         int next = FindNextMove(position, orientation);
-        Debug.Log("OnHitWall:"+next);
         lawnMower.SetNextTurn(next);
     }
 

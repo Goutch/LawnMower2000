@@ -43,7 +43,10 @@ public class MainMenu : MonoBehaviour
         LocalOnlineMenuPanel.SetActive(false);
     }
 
-
+    public void OnQuitButtonClick()
+    {
+        Application.Quit();
+    }
     public void OnJoinButtonClick()
     {
         options.GameMode = Options.GameModeType.Online;

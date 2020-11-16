@@ -9,7 +9,7 @@ namespace DefaultNamespace
         [SerializeField] private Button backToMenuButton = null;
         [SerializeField] private GameObject pointsPanel = null;
         [SerializeField] private GameObject statsPrefab = null;
-
+        [SerializeField] private Text timeText;
         private GameManager gameManager;
         private Options options;
 
@@ -22,11 +22,18 @@ namespace DefaultNamespace
             menuPanel.SetActive(false);
 
             gameManager.OnGameStart += GameManager_OnGameStart;
+            gameManager.OnGameTimeChange += GameManager_OnGameTimeChange;
+        }
+
+        private void GameManager_OnGameTimeChange(float time)
+        {
+            timeText.text = "Time:"+((int)Mathf.Floor(time));
         }
 
         public void OnDisable()
         {
             gameManager.OnGameStart -= GameManager_OnGameStart;
+            gameManager.OnGameTimeChange -= GameManager_OnGameTimeChange;
         }
 
         private void GameManager_OnGameStart()

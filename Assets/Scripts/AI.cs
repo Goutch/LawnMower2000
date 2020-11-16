@@ -36,12 +36,14 @@ public class AI : MonoBehaviour
 
     private void OnReachedDestination(Vector2Int position, LawnMower.Orientation orientation)
     {
-        lawnMower.SetNextTurn(FindNextMove(position, orientation));
+        int next = FindNextMove(position, orientation);
+        lawnMower.SetNextTurn(next);
     }
 
     private void OnHitWall(Vector2Int position, LawnMower.Orientation orientation)
     {
-        lawnMower.SetNextTurn(FindNextMove(position, orientation));
+        int next = FindNextMove(position, orientation);
+        lawnMower.SetNextTurn(next);
     }
 
 
@@ -56,7 +58,7 @@ public class AI : MonoBehaviour
         {
             current = open.Dequeue();
             closed.Add(current.position);
-            if (current.position!=position && map.GetTile(current.position) == Map.TileType.Grass)
+            if (current.position != position && map.GetTile(current.position) == Map.TileType.Grass)
             {
                 destination = current;
                 break;
@@ -93,7 +95,7 @@ public class AI : MonoBehaviour
             if (map.ContainPosition(front) && map.GetTile(front) != Map.TileType.Wall && !closed.Contains(front))
                 open.Enqueue(new Node(front, current, orientation));
             if (map.ContainPosition(right) && map.GetTile(right) != Map.TileType.Wall && !closed.Contains(right))
-               open.Enqueue(new Node(right, current, (LawnMower.Orientation) (((int) orientation + 1) % 4)));
+                open.Enqueue(new Node(right, current, (LawnMower.Orientation) (((int) orientation + 1) % 4)));
             if (map.ContainPosition(left) && map.GetTile(left) != Map.TileType.Wall && !closed.Contains(left))
                 open.Enqueue(new Node(left, current, (LawnMower.Orientation) (((int) orientation + 3) % 4)));
         }
@@ -101,7 +103,7 @@ public class AI : MonoBehaviour
         if (destination != null)
         {
             current = destination;
-            while (current.parent.position!=position)
+            while (current.parent.position != position)
             {
                 current = current.parent;
             }

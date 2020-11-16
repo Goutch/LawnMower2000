@@ -14,18 +14,18 @@ public class Options : MonoBehaviour
     }
 
     public const int AMOUNT_OF_KEY_BINDINGS = 4; //0 = start
-    
-    public GameModeType GameMode { set; get; }  = GameModeType.OfflineVsAI;
+
+    public GameModeType GameMode { set; get; } = GameModeType.OfflineVsAI;
     public Color LawnMower1Color { private set; get; } = Color.blue;
     public Color LawnMower2Color { private set; get; } = Color.red;
     public KeyCode InGameMenuButtonKey { private set; get; } = KeyCode.Escape;
-    public KeyCode ContinueKey { private set; get; }  = KeyCode.W;
+    public KeyCode ContinueKey { private set; get; } = KeyCode.W;
     public KeyCode TurnLeftKey { private set; get; } = KeyCode.A;
     public KeyCode TurnRightKey { private set; get; } = KeyCode.D;
     public KeyCode ReadyKey { private set; get; } = KeyCode.Return;
     public Vector2Int MapSize { private set; get; } = new Vector2Int(16, 16);
 
-    
+
     private Hashtable bindings;
 
     private void Start()
@@ -37,15 +37,15 @@ public class Options : MonoBehaviour
     {
         string path = "Assets/Resources/Controls.txt";
         StreamReader reader = new StreamReader(path);
-        string line; 
+        string line;
         bindings = new Hashtable();
-        
+
         while ((line = reader.ReadLine()) != null)
         {
             string[] txtLine = line.Split('=');
-            bindings.Add(txtLine[0], System.Enum.Parse(typeof(KeyCode), txtLine[1]) );
+            bindings.Add(txtLine[0], System.Enum.Parse(typeof(KeyCode), txtLine[1]));
         }
-        
+
         Debug.Log(reader.ReadToEnd());
         reader.Close();
 
@@ -61,12 +61,12 @@ public class Options : MonoBehaviour
 
     public void ApplyKeyBindings()
     {
-        TurnRightKey = (KeyCode)bindings["R"];
+        TurnRightKey = (KeyCode) bindings["R"];
         TurnLeftKey = (KeyCode) bindings["L"];
         ReadyKey = (KeyCode) bindings["S"];
         InGameMenuButtonKey = (KeyCode) bindings["M"];
         ContinueKey = (KeyCode) bindings["C"];
-        
+
         WriteKeyBindings();
     }
 
@@ -79,18 +79,20 @@ public class Options : MonoBehaviour
     {
         string path = "Assets/Resources/Controls.txt";
         StreamWriter writer = new StreamWriter(path, false);
-        
+
         ICollection keys = bindings.Keys;
-        
-        foreach( string k in keys )
-        { 
-            writer.WriteLine(k+"="+bindings[k]);
+
+        foreach (string k in keys)
+        {
+            writer.WriteLine(k + "=" + bindings[k]);
         }
+
         writer.Close();
     }
 
     public void SetDefaultKeyBindings()
     {
+        /*
         string path = "Assets/Resources/Controls.txt";
         StreamWriter writer = new StreamWriter(path, false);
         writer.WriteLine("R=D");
@@ -99,13 +101,19 @@ public class Options : MonoBehaviour
         writer.WriteLine("M=Escape");
         writer.WriteLine("C=W");
         writer.Close();
-        
-        ReadKeyBindings();
+*/
+        bindings["R"] = KeyCode.D;
+        bindings["L"] = KeyCode.A;
+        bindings["S"] = KeyCode.Return;
+        bindings["M"] = KeyCode.Escape;
+        bindings["C"] = KeyCode.W;
+
+        WriteKeyBindings();
+        //ReadKeyBindings();
     }
 
     public KeyCode getKeyBinding(string key)
     {
-        return (KeyCode)bindings[key];
+        return (KeyCode) bindings[key];
     }
-
 }

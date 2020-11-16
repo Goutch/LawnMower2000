@@ -16,6 +16,7 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] private Text RightKeyText;
     [SerializeField] private Text ContinueKeyText;
     [SerializeField] private Text StartKeyText;
+    [SerializeField] private Button ApplyButton;
 
     private GameManager gameManager;
     private Options options;
@@ -26,9 +27,7 @@ public class OptionsMenu : MonoBehaviour
     private bool waitingForKey;
     private Coroutine waitingForKey_Coroutine;
     private Coroutine timer_Coroutine;
-    private string previous_KeyId;
-    private Hashtable keyBindingCache;
-    
+
     private void Start()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
@@ -36,23 +35,18 @@ public class OptionsMenu : MonoBehaviour
         keyBindingChanged = false;
         keyBindingText = new Hashtable();
         waitingForKey = false;
-        previous_KeyId = "L";
-        keyBindingCache = new Hashtable();
-        InitKeyBindingCache();
         InitKeyBindingText();
     }
 
     public void OnApplyButtonClicked()
     {
         options.ApplyKeyBindings();
-        UpdateKeyBindingCache();
         keyBindingChanged = false;
     }
 
     public void OnDefaultButtonClicked()
     {
         options.SetDefaultKeyBindings();
-        UpdateKeyBindingCache();
         SetAllKeysBindingText();
     }
 
@@ -65,6 +59,7 @@ public class OptionsMenu : MonoBehaviour
 
     public void OnKeyBindingButtonClicked(string id)
     {
+        ApplyButton.enabled = false;
         if (waitingForKey_Coroutine != null)
         {
             StopCoroutine(waitingForKey_Coroutine);
@@ -72,10 +67,8 @@ public class OptionsMenu : MonoBehaviour
             {
                 StopCoroutine(timer_Coroutine);
             }
-            SetKeyBindingTextValueFromCache(previous_KeyId);
         }
-
-        previous_KeyId = id;
+        
         waitingForKey_Coroutine = StartCoroutine(WaitForKey(id));
     }
 
@@ -92,7 +85,6 @@ public class OptionsMenu : MonoBehaviour
                 {
                     if (Input.GetKey(k))
                     {
-                        keyBindingCache[id] = k;
                         pressedKey = k;
                         waitingForKey = false;
                         keyBindingChanged = true;
@@ -112,6 +104,8 @@ public class OptionsMenu : MonoBehaviour
         {
             SetKeyBindingTextValue(id);
         }
+
+        ApplyButton.enabled = true;
     }
 
     IEnumerator KeyBindingTimer(string id)
@@ -129,11 +123,6 @@ public class OptionsMenu : MonoBehaviour
     private void SetKeyBindingTextValue(string key)
     {
        ((Text) keyBindingText[key]).text = options.getKeyBinding(key).ToString();
-    }
-
-    private void SetKeyBindingTextValueFromCache(string key)
-    {
-        ((Text) keyBindingText[key]).text = keyBindingCache[key].ToString();
     }
 
     private void InitKeyBindingText()
@@ -154,21 +143,13 @@ public class OptionsMenu : MonoBehaviour
         }
     }
 
-    private void InitKeyBindingCache()
+    private void OnEnable()
     {
-        keyBindingCache.Add("L",options.getKeyBinding("L"));
-        keyBindingCache.Add("M",options.getKeyBinding("M"));
-        keyBindingCache.Add("R",options.getKeyBinding("R"));
-        keyBindingCache.Add("C",options.getKeyBinding("C"));
-        keyBindingCache.Add("S",options.getKeyBinding("S"));
-    }
-
-    private void UpdateKeyBindingCache()
-    {
-        foreach (string k in keyBindingCache.Keys)
+        if (options != null)
         {
-            keyBindingCache[k] = options.getKeyBinding(k);
+            options.ReadKeyBindings();
+            SetAllKeysBindingText();
         }
     }
-
+    
 }

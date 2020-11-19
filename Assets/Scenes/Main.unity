@@ -156,6 +156,8 @@ MonoBehaviour:
   mapPrefab: {fileID: 1491792935337939721, guid: 678e5e30ec79bf847bd56f2873a257dd, type: 3}
   lawnMowerPrefab: {fileID: 3165817870513948915, guid: c0028ec9a67185f42a75ae1ed3fbc816, type: 3}
   gameMenuPrefab: {fileID: 6485552386242917978, guid: 24d351d73c477cc4bba46cd3ec733bb3, type: 3}
+  gameDuration: 30
+  Player: {fileID: 0}
 --- !u!114 &875841315
 MonoBehaviour:
   m_ObjectHideFlags: 0

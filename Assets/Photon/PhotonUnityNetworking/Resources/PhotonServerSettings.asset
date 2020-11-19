@@ -36,6 +36,9 @@ MonoBehaviour:
   - ClickRpc
   - DestroyRpc
   - ChangeTurnRPC
+  - AnswerIfGameStarted
+  - AskIfGameStarted
+  - GameFinishedRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

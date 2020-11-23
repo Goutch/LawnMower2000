@@ -18,17 +18,19 @@ public class Player : MonoBehaviour
     {
         int turn = 0;
         turn -= Input.GetKeyDown(options.TurnLeftKey) ? 1 : 0;
+        turn -= (Input.GetAxis("MoveHorizontal") ==-1) ? 1 : 0;
         turn += Input.GetKeyDown(options.TurnRightKey) ? 1 : 0;
+        turn += (Input.GetAxis("MoveHorizontal") == 1) ? 1 : 0;
         if (turn != 0)
         {
             lawnMower.SetNextTurn(turn);
             lastTurned = Time.time;
         }
-        if (Input.GetKeyDown(options.ContinueKey))
+        if (Input.GetKeyDown(options.ContinueKey) || Input.GetButton("Continue"))
         {
             lawnMower.SetNextTurn(0);
         }
-        if (Input.GetKeyDown(options.ReadyKey))
+        if (Input.GetKeyDown(options.ReadyKey)|| Input.GetButton("Start"))
         {
             lawnMower.Ready = true;
         }

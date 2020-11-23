@@ -68,7 +68,7 @@ namespace DefaultNamespace
                 startGameText.gameObject.SetActive(false);
             }
 
-            if (Input.GetKeyDown(options.InGameMenuButtonKey))
+            if (Input.GetKeyDown(options.InGameMenuButtonKey)|| Input.GetButton("Menu"))
             {
                 menuPanel.SetActive(!menuPanel.activeSelf);
             }

@@ -77,9 +77,14 @@ using UnityEngine.UI;
                 menuPanel.SetActive(!menuPanel.activeSelf);
                 if (menuPanel.activeSelf)
                 {
+                    Time.timeScale = 0;
                     EventSystem.current = eventSystem;
                     eventSystem.SetSelectedGameObject(null);
                     eventSystem.SetSelectedGameObject(backToMenuButton.gameObject);
+                }
+                else
+                {
+                    Time.timeScale = 1;
                 }
                 gameManager.SetInGameMenuState(menuPanel.activeSelf);
             }
@@ -87,6 +92,7 @@ using UnityEngine.UI;
 
         public void OnBackToMenuButtonClick()
         {
+            Time.timeScale = 1;
             gameManager.FinishGame();
             gameManager.LoadMenu();
             gameManager.SetInGameMenuState(false);

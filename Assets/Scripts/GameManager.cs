@@ -66,46 +66,52 @@ public class GameManager : MonoBehaviour
 
         if(GameFinished)
         {
-            if (options.GameMode == Options.GameModeType.Online)
+            FinishGame();
+        }
+    }
+
+    public void FinishGame()
+    {
+        gameTime = 0;
+        if (options.GameMode == Options.GameModeType.Online)
+        {
+            PhotonNetwork.Destroy(Player.GetComponentInParent<PhotonView>());
+            LawnMowers.Clear();
+            map.Init(0);
+
+            LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower", map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
+            Player = lawnMower1;
+
+            lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
+            lawnMower1.gameObject.AddComponent<Player>();
+
+            GameFinished = false;
+        }
+
+        if (options.GameMode == Options.GameModeType.OfflineVsAI)
+        {
+            foreach (LawnMower mower in LawnMowers)
             {
-                PhotonNetwork.Destroy(Player.GetComponentInParent<PhotonView>());
-                LawnMowers.Clear();
-                map.Init(0);
-
-                LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower", map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
-                Player = lawnMower1;
-
-                lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
-                lawnMower1.gameObject.AddComponent<Player>();
-
-                GameFinished = false;
+                Destroy(mower.gameObject);
             }
 
-            if (options.GameMode == Options.GameModeType.OfflineVsAI)
-            {
-                foreach (LawnMower mower in LawnMowers)
-                {
-                    Destroy(mower.gameObject);
-                }
+            LawnMowers.Clear();
 
-                LawnMowers.Clear();
+            map.Init(0);
 
-                map.Init(0);
+            LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+            LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 
-                LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-                LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+            lawnMower1.Color = options.LawnMower1Color;
+            lawnMower2.Color = options.LawnMower2Color;
+            lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
+            lawnMower2.OrientationLawnMower = LawnMower.Orientation.up;
 
-                lawnMower1.Color = options.LawnMower1Color;
-                lawnMower2.Color = options.LawnMower2Color;
-                lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
-                lawnMower2.OrientationLawnMower = LawnMower.Orientation.up;
+            lawnMower1.gameObject.AddComponent<Player>();
+            Player = lawnMower1;
+            lawnMower2.gameObject.AddComponent<AI>();
 
-                lawnMower1.gameObject.AddComponent<Player>();
-                Player = lawnMower1;
-                lawnMower2.gameObject.AddComponent<AI>();
-
-                GameFinished = false;
-            }
+            GameFinished = false;
         }
     }
 
@@ -189,6 +195,8 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name == "Game")
         {
+            GameStarted = false;
+            GameFinished = false;
             SceneManager.SetActiveScene(scene);
             SceneManager.UnloadSceneAsync("Menu");
             gameSceneActive = true;

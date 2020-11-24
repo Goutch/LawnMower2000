@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
@@ -14,6 +16,7 @@ using UnityEngine.UI;
         private GameManager gameManager;
         private Options options;
         private bool menuIsOpened;
+        private EventSystem eventSystem;
 
         private List<StatsUpdate> statsUpdates = new List<StatsUpdate>();
 
@@ -21,11 +24,12 @@ using UnityEngine.UI;
         {
             gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
             options = gameManager.GetComponent<Options>();
-            backToMenuButton.onClick.AddListener(OnBackToMenuButtonClick);
             menuPanel.SetActive(false);
             menuIsOpened = false;
             gameManager.OnGameStart += GameManager_OnGameStart;
             gameManager.OnGameTimeChange += GameManager_OnGameTimeChange;
+            eventSystem = menuPanel.GetComponentInChildren<EventSystem>();
+           
         }
 
         private void GameManager_OnGameTimeChange(float time)
@@ -68,21 +72,24 @@ using UnityEngine.UI;
                 startGameText.gameObject.SetActive(false);
             }
 
-            if (Input.GetKeyDown(options.InGameMenuButtonKey)|| Input.GetButton("Menu"))
+            if (Input.GetKeyDown(options.InGameMenuButtonKey)|| Input.GetButtonDown("Menu"))
             {
                 menuPanel.SetActive(!menuPanel.activeSelf);
+                if (menuPanel.activeSelf)
+                {
+                    EventSystem.current = eventSystem;
+                    eventSystem.SetSelectedGameObject(null);
+                    eventSystem.SetSelectedGameObject(backToMenuButton.gameObject);
+                }
                 gameManager.SetInGameMenuState(menuPanel.activeSelf);
             }
         }
 
-        private void OnDestroy()
+        public void OnBackToMenuButtonClick()
         {
-            backToMenuButton.onClick.RemoveListener(OnBackToMenuButtonClick);
-        }
-
-        private void OnBackToMenuButtonClick()
-        {
+            gameManager.FinishGame();
             gameManager.LoadMenu();
+            gameManager.SetInGameMenuState(false);
         }
         
     }

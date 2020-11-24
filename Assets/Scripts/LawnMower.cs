@@ -24,7 +24,7 @@ public class LawnMower : MonoBehaviour
 
     public event OnChangeNextTurnHander OnChangeNextTurn;
 
-    private int nextTurn = 0;
+    [SerializeField] private int nextTurn = 0;
 
     public int NextTurn
     {
@@ -101,6 +101,7 @@ public class LawnMower : MonoBehaviour
 
         if (gameManager.GameStarted)
         {
+            bool hitWall = false;
             //move if does not it wall
             Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
             if (map.GetTile(frontPosition) != Map.TileType.Wall)
@@ -108,19 +109,24 @@ public class LawnMower : MonoBehaviour
                 transform.Translate(Vector3.up * Time.deltaTime);
             }
             //turn if hit wall and has next turn
-            else if (NextTurn != 0)
-            {
-                Turn();
-                NextTurn = 0;
-            }
-            //notify wall was hit to change tragectory
             else
             {
-                OnWallHit?.Invoke(map.WorldToGrid(transform.position), OrientationLawnMower);
+                hitWall = true;
+                if (NextTurn != 0)
+                {
+                    Turn();
+                    NextTurn = 0;
+                }
+                //notify wall was hit to change tragectory
+                else
+                {
+                    OnWallHit?.Invoke(map.WorldToGrid(transform.position), OrientationLawnMower);
+                }
             }
 
             //is in the middle of a tile
-            if (map.WorldToGrid(transform.position) == nextTilePosition &&
+            if (!hitWall &&
+                map.WorldToGrid(transform.position) == nextTilePosition &&
                 map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
             {
                 Mow();

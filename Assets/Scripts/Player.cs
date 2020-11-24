@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     private GameManager gameManager;
     private float lastTurned = 0;
     private bool readPlayerInputs;
+    private bool hasResetStick = false;
 
     void Start()
     {
@@ -23,14 +24,19 @@ public class Player : MonoBehaviour
         if (readPlayerInputs)
         {
             int turn = 0;
+            
+            hasResetStick = hasResetStick || (Mathf.Abs(Input.GetAxis("MoveHorizontal")) < 0.1);
+            turn -= (Input.GetAxis("MoveHorizontal") == -1 && hasResetStick) ? 1 : 0;
+            turn += (Input.GetAxis("MoveHorizontal") == 1 && hasResetStick) ? 1 : 0;
+
             turn -= Input.GetKeyDown(options.TurnLeftKey) ? 1 : 0;
-            turn -= (Input.GetAxis("MoveHorizontal") == -1) ? 1 : 0;
             turn += Input.GetKeyDown(options.TurnRightKey) ? 1 : 0;
-            turn += (Input.GetAxis("MoveHorizontal") == 1) ? 1 : 0;
+            
             if (turn != 0)
             {
                 lawnMower.SetNextTurn(turn);
                 lastTurned = Time.time;
+                hasResetStick = false;
             }
 
             if (Input.GetKeyDown(options.ContinueKey) || Input.GetButton("Continue"))
@@ -42,6 +48,7 @@ public class Player : MonoBehaviour
             {
                 lawnMower.Ready = true;
             }
+            
         }
     }
 

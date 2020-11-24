@@ -2,8 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DefaultNamespace
-{
+
     public class GameMenu : MonoBehaviour
     {
         [SerializeField] private GameObject menuPanel = null;
@@ -14,6 +13,7 @@ namespace DefaultNamespace
         [SerializeField] private Text startGameText = null;
         private GameManager gameManager;
         private Options options;
+        private bool menuIsOpened;
 
         private List<StatsUpdate> statsUpdates = new List<StatsUpdate>();
 
@@ -23,7 +23,7 @@ namespace DefaultNamespace
             options = gameManager.GetComponent<Options>();
             backToMenuButton.onClick.AddListener(OnBackToMenuButtonClick);
             menuPanel.SetActive(false);
-
+            menuIsOpened = false;
             gameManager.OnGameStart += GameManager_OnGameStart;
             gameManager.OnGameTimeChange += GameManager_OnGameTimeChange;
         }
@@ -71,6 +71,7 @@ namespace DefaultNamespace
             if (Input.GetKeyDown(options.InGameMenuButtonKey)|| Input.GetButton("Menu"))
             {
                 menuPanel.SetActive(!menuPanel.activeSelf);
+                gameManager.SetInGameMenuState(menuPanel.activeSelf);
             }
         }
 
@@ -83,5 +84,5 @@ namespace DefaultNamespace
         {
             gameManager.LoadMenu();
         }
+        
     }
-}

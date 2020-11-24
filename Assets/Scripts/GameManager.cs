@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     private Options options;
     private bool gameSceneActive = false;
     private Map map;
+    private bool inGameMenuIsOpened = false;
 
     public delegate void OnGameStartHandler();
 
@@ -237,5 +238,16 @@ public class GameManager : MonoBehaviour
     public Map GetMap()
     {
         return map;
+    }
+
+    public void SetInGameMenuState(bool enabled)
+    {
+        inGameMenuIsOpened = enabled;
+        Player.GetComponent<Player>().TogglePlayerInputs(enabled);
+    }
+
+    public bool IsMenuOpen()
+    {
+        return inGameMenuIsOpened;
     }
 }

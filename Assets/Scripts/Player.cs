@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         options = gameManager.GetComponent<Options>();
         lawnMower = GetComponent<LawnMower>();
-        Camera.current.GetComponent<CameraMovement>().ObjectToFollow = gameObject.transform;
+        Camera.main.GetComponent<CameraMovement>().ObjectToFollow = gameObject.transform;
         readPlayerInputs = !gameManager.IsMenuOpen();
     }
 

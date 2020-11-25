@@ -22,7 +22,6 @@ public class GameMenu : MonoBehaviour
     [SerializeField] private Image playerTwoImage = null;
     private GameManager gameManager;
     private Options options;
-    private bool menuIsOpened;
     private EventSystem eventSystem;
     private List<StatsUpdate> statsUpdates = new List<StatsUpdate>();
 
@@ -32,7 +31,6 @@ public class GameMenu : MonoBehaviour
         options = gameManager.GetComponent<Options>();
         menuPanel.SetActive(false);
         endGamePanel.SetActive(false);
-        menuIsOpened = false;
         gameManager.OnGameStart += GameManager_OnGameStart;
         gameManager.OnGameTimeChange += GameManager_OnGameTimeChange;
         gameManager.OnGameFinish += OnGameFinished;

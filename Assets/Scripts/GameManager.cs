@@ -24,8 +24,9 @@ public class GameManager : MonoBehaviour
 
     public delegate void OnGameStartHandler();
 
+    public delegate void OnGameFinishHandler();
     public event OnGameStartHandler OnGameStart;
-
+    public event OnGameFinishHandler OnGameFinish;
     public delegate void OnGameTimeChangeHandler(float time);
 
     public event OnGameTimeChangeHandler OnGameTimeChange;
@@ -67,8 +68,7 @@ public class GameManager : MonoBehaviour
 
         if (GameFinished)
         {
-            gameMenuPrefab.GetComponent<GameMenu>().OnGameFinished();
-            //FinishGame();
+            OnGameFinish?.Invoke();
         }
     }
 

@@ -157,6 +157,7 @@ MonoBehaviour:
   lawnMowerPrefab: {fileID: 3165817870513948915, guid: c0028ec9a67185f42a75ae1ed3fbc816, type: 3}
   gameMenuPrefab: {fileID: 6485552386242917978, guid: 24d351d73c477cc4bba46cd3ec733bb3, type: 3}
   gameDuration: 30
+  titleScreenPrefab: {fileID: 196082227485093382, guid: a656ec67cca147841affd7de253d7183, type: 3}
   Player: {fileID: 0}
 --- !u!114 &875841315
 MonoBehaviour:

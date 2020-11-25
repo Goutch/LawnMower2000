@@ -15,11 +15,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject lawnMowerPrefab;
     [SerializeField] private GameObject gameMenuPrefab;
     [SerializeField] private float gameDuration;
-
+    [SerializeField] private GameObject titleScreenPrefab;
     private Options options;
     private bool gameSceneActive = false;
     private Map map;
     private bool inGameMenuIsOpened = false;
+    private bool titleScreenShowed = false;
 
     public delegate void OnGameStartHandler();
 
@@ -64,7 +65,7 @@ public class GameManager : MonoBehaviour
             OnGameTimeChange?.Invoke(gameTime);
         }
 
-        if(GameFinished)
+        if (GameFinished)
         {
             gameMenuPrefab.GetComponent<GameMenu>().OnGameFinished();
             //FinishGame();
@@ -120,6 +121,7 @@ public class GameManager : MonoBehaviour
     {
         options = GetComponent<Options>();
         SceneManager.sceneLoaded += OnSceneLoaded;
+
         LoadMenu();
     }
 
@@ -169,7 +171,6 @@ public class GameManager : MonoBehaviour
         networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
 
         StartNetworkGame();
-        
     }
 
     public bool IsGameActive()
@@ -206,6 +207,12 @@ public class GameManager : MonoBehaviour
         if (scene.name == "Menu")
         {
             SceneManager.SetActiveScene(scene);
+            if (!titleScreenShowed)
+            {
+                titleScreenShowed = true;
+                Instantiate(titleScreenPrefab,Vector3.zero,Quaternion.identity);
+            }
+
             if (IsGameActive())
             {
                 SceneManager.UnloadSceneAsync("Game");

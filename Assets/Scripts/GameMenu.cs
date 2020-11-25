@@ -25,7 +25,7 @@ using UnityEngine.UI;
             gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
             options = gameManager.GetComponent<Options>();
             menuPanel.SetActive(false);
-            endGamePanel.SetActive(false);
+            //endGamePanel.SetActive(false);
             menuIsOpened = false;
             gameManager.OnGameStart += GameManager_OnGameStart;
             gameManager.OnGameTimeChange += GameManager_OnGameTimeChange;

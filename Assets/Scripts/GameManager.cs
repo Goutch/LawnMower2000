@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject mapPrefab;
     [SerializeField] private GameObject lawnMowerPrefab;
     [SerializeField] private GameObject gameMenuPrefab;
-    [SerializeField] private float gameDuration;
     [SerializeField] private GameObject titleScreenPrefab;
     private Options options;
     private bool gameSceneActive = false;
@@ -49,8 +48,7 @@ public class GameManager : MonoBehaviour
             if (LawnMowers.Count != 0 && LawnMowers.All(l => l.Ready))
             {
                 GameStarted = true;
-
-                gameTime = gameDuration;
+                gameTime = (((options.MapSize.x-2)*(options.MapSize.y-2))/LawnMowers.Count)-4;
                 OnGameStart?.Invoke();
             }
         }

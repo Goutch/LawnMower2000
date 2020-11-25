@@ -199,7 +199,6 @@ GameObject:
   m_Component:
   - component: {fileID: 846972240}
   - component: {fileID: 846972239}
-  - component: {fileID: 846972238}
   m_Layer: 0
   m_Name: LoadingCamera
   m_TagString: Untagged
@@ -207,14 +206,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &846972238
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 846972237}
-  m_Enabled: 1
 --- !u!20 &846972239
 Camera:
   m_ObjectHideFlags: 0

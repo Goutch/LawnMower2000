@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 
@@ -14,6 +16,10 @@ public class GameMenu : MonoBehaviour
     [SerializeField] private GameObject statsPrefab = null;
     [SerializeField] private Text timeText = null;
     [SerializeField] private Text startGameText = null;
+    [SerializeField] private Text playerOneScore = null;
+    [SerializeField] private Text playerTwoScore = null;
+    [SerializeField] private Image playerOneImage = null;
+    [SerializeField] private Image playerTwoImage = null;
     private GameManager gameManager;
     private Options options;
     private bool menuIsOpened;
@@ -111,6 +117,20 @@ public class GameMenu : MonoBehaviour
         if (!endGamePanel.activeSelf)
         {
             endGamePanel.SetActive(true);
+             
+            for (int i=0;i< gameManager.LawnMowers.Count; i++)
+            {
+                if (i == 0)
+                {
+                    playerOneImage.color = gameManager.LawnMowers[i].Color;
+                    playerOneScore.text = gameManager.LawnMowers[i].Points.ToString();
+                }
+                else
+                {
+                    playerTwoImage.color = gameManager.LawnMowers[i].Color;
+                    playerTwoScore.text = gameManager.LawnMowers[i].Points.ToString();
+                }
+            }
         }
     }
 

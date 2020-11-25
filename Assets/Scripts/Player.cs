@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     private float lastTurned = 0;
     private bool readPlayerInputs;
     private bool hasResetStick = false;
+    private bool hasResetCross = false;
 
     void Start()
     {
@@ -29,6 +30,10 @@ public class Player : MonoBehaviour
             turn -= (Input.GetAxis("MoveHorizontal") == -1 && hasResetStick) ? 1 : 0;
             turn += (Input.GetAxis("MoveHorizontal") == 1 && hasResetStick) ? 1 : 0;
 
+            hasResetCross = hasResetCross || Math.Abs(Input.GetAxis("MoveHorizontalCross")) < 0.1;
+            turn -= (Input.GetAxis("MoveHorizontalCross") == -1 && hasResetCross) ? 1 : 0;
+            turn += (Input.GetAxis("MoveHorizontalCross") == 1 && hasResetCross) ? 1 : 0;
+
             turn -= Input.GetKeyDown(options.TurnLeftKey) ? 1 : 0;
             turn += Input.GetKeyDown(options.TurnRightKey) ? 1 : 0;
             
@@ -37,9 +42,10 @@ public class Player : MonoBehaviour
                 lawnMower.SetNextTurn(turn);
                 lastTurned = Time.time;
                 hasResetStick = false;
+                hasResetCross = false;
             }
 
-            if (Input.GetKeyDown(options.ContinueKey) || Input.GetButton("Continue"))
+            if (Input.GetKeyDown(options.ContinueKey) || Input.GetButton("Continue") || Input.GetAxis("MoveVerticalCross")>0)
             {
                 lawnMower.SetNextTurn(0);
             }

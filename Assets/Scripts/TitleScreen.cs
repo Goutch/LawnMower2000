@@ -1,10 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TitleScreen : MonoBehaviour
 {
+    private void Start()
+    {
+        EventSystem.current = GetComponentInChildren<EventSystem>();
+    }
+
     void Update()
     {
         if (Input.anyKey)

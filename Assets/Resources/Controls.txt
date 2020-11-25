@@ -1,5 +1,5 @@
-L=A
-M=Escape
-R=D
-C=W
-S=Return
+L=Escape
+M=JoystickButton0
+R=JoystickButton0
+C=JoystickButton0
+S=JoystickButton0

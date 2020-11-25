@@ -66,7 +66,8 @@ public class GameManager : MonoBehaviour
 
         if(GameFinished)
         {
-            FinishGame();
+            gameMenuPrefab.GetComponent<GameMenu>().OnGameFinished();
+            //FinishGame();
         }
     }
 

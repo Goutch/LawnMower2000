@@ -18,7 +18,6 @@ using UnityEngine.UI;
         private Options options;
         private bool menuIsOpened;
         private EventSystem eventSystem;
-
         private List<StatsUpdate> statsUpdates = new List<StatsUpdate>();
 
         private void Start()
@@ -105,13 +104,16 @@ using UnityEngine.UI;
 
         public void OnGameFinished()
         {
-            endGamePanel.SetActive(true);
-            
+            if (!endGamePanel.activeSelf)
+            {
+                endGamePanel.SetActive(true);
+            }
         }
 
         public void OnPlayAgainButtonClicked()
         {
-            
+            endGamePanel.SetActive(false);
+            gameManager.FinishGame();
         }
 
     }

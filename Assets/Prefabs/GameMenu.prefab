@@ -31,7 +31,7 @@ RectTransform:
   m_Children:
   - {fileID: 832341024}
   m_Father: {fileID: 6485552386589468951}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -849,7 +849,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuPanel: {fileID: 6485552386348920017}
   backToMenuButton: {fileID: 6485552386860771007}
-  endGamePanel: {fileID: 0}
+  endGamePanel: {fileID: 7892550670444532304}
   pointsPanel: {fileID: 6485552386689352167}
   statsPrefab: {fileID: 8034793114697176600, guid: 29d27edb7be97624dbabbcf64d00a2ab, type: 3}
   timeText: {fileID: 832341022}
@@ -886,7 +886,7 @@ RectTransform:
   - {fileID: 5955655583846187548}
   - {fileID: 8150519784180434328}
   m_Father: {fileID: 6485552386589468951}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -962,10 +962,10 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 4744007028939837922}
+  - {fileID: 7746136560909421893}
   - {fileID: 6485552386348920016}
   - {fileID: 6485552386689352166}
   - {fileID: 707359195}
-  - {fileID: 7746136560909421893}
   m_Father: {fileID: 6485552386242917976}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1064,7 +1064,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6485552386589468951}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -1390,7 +1390,7 @@ RectTransform:
   - {fileID: 5388487580633651238}
   - {fileID: 4671026959440275407}
   m_Father: {fileID: 6485552386589468951}
-  m_RootOrder: 4
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

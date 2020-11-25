@@ -258,4 +258,9 @@ public class GameManager : MonoBehaviour
     {
         return inGameMenuIsOpened;
     }
+
+    public bool IsGameOnline()
+    {
+        return options.GameMode == Options.GameModeType.Online;
+    }
 }

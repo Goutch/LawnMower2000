@@ -9,6 +9,7 @@ using UnityEngine.UI;
     {
         [SerializeField] private GameObject menuPanel = null;
         [SerializeField] private Button backToMenuButton = null;
+        [SerializeField] private GameObject endGamePanel = null;
         [SerializeField] private GameObject pointsPanel = null;
         [SerializeField] private GameObject statsPrefab = null;
         [SerializeField] private Text timeText = null;
@@ -25,6 +26,7 @@ using UnityEngine.UI;
             gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
             options = gameManager.GetComponent<Options>();
             menuPanel.SetActive(false);
+            endGamePanel.SetActive(false);
             menuIsOpened = false;
             gameManager.OnGameStart += GameManager_OnGameStart;
             gameManager.OnGameTimeChange += GameManager_OnGameTimeChange;
@@ -77,7 +79,10 @@ using UnityEngine.UI;
                 menuPanel.SetActive(!menuPanel.activeSelf);
                 if (menuPanel.activeSelf)
                 {
-                    Time.timeScale = 0;
+                    if (!gameManager.IsGameOnline())
+                    {
+                        Time.timeScale = 0;
+                    }
                     EventSystem.current = eventSystem;
                     eventSystem.SetSelectedGameObject(null);
                     eventSystem.SetSelectedGameObject(backToMenuButton.gameObject);
@@ -97,5 +102,16 @@ using UnityEngine.UI;
             gameManager.LoadMenu();
             gameManager.SetInGameMenuState(false);
         }
-        
+
+        public void OnGameFinished()
+        {
+            endGamePanel.SetActive(true);
+            
+        }
+
+        public void OnPlayAgainButtonClicked()
+        {
+            
+        }
+
     }

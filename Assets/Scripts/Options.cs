@@ -92,16 +92,6 @@ public class Options : MonoBehaviour
 
     public void SetDefaultKeyBindings()
     {
-        /*
-        string path = "Assets/Resources/Controls.txt";
-        StreamWriter writer = new StreamWriter(path, false);
-        writer.WriteLine("R=D");
-        writer.WriteLine("L=A");
-        writer.WriteLine("S=Return");
-        writer.WriteLine("M=Escape");
-        writer.WriteLine("C=W");
-        writer.Close();
-*/
         bindings["R"] = KeyCode.D;
         bindings["L"] = KeyCode.A;
         bindings["S"] = KeyCode.Return;
@@ -109,7 +99,6 @@ public class Options : MonoBehaviour
         bindings["C"] = KeyCode.W;
 
         WriteKeyBindings();
-        //ReadKeyBindings();
     }
 
     public KeyCode getKeyBinding(string key)

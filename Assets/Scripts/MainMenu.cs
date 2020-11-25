@@ -7,7 +7,6 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject LocalOnlineMenuPanel = null;
     [SerializeField] private GameObject JoinRoomMenuPanel = null;
     [SerializeField] private GameObject OptionsMenuPanel = null;
-
     [SerializeField] private InputField RoomInputField = null;
 
     private GameManager gameManager;

@@ -25,8 +25,10 @@ public class GameManager : MonoBehaviour
     public delegate void OnGameStartHandler();
 
     public delegate void OnGameFinishHandler();
+
     public event OnGameStartHandler OnGameStart;
     public event OnGameFinishHandler OnGameFinish;
+
     public delegate void OnGameTimeChangeHandler(float time);
 
     public event OnGameTimeChangeHandler OnGameTimeChange;
@@ -169,7 +171,7 @@ public class GameManager : MonoBehaviour
     {
         NetworkManager networkManager = (NetworkManager) sender;
         networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
-
+        SceneManager.UnloadSceneAsync("Scenes/Loading");
         StartNetworkGame();
     }
 
@@ -210,7 +212,7 @@ public class GameManager : MonoBehaviour
             if (!titleScreenShowed)
             {
                 titleScreenShowed = true;
-                Instantiate(titleScreenPrefab,Vector3.zero,Quaternion.identity);
+                Instantiate(titleScreenPrefab, Vector3.zero, Quaternion.identity);
             }
 
             if (IsGameActive())
@@ -222,6 +224,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator LoadLocalGameAsynchronously()
     {
+        SceneManager.LoadScene("Scenes/Loading", LoadSceneMode.Additive);
         AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
 
         while (!operation.isDone)
@@ -229,11 +232,15 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        StartGame();
+        StartGame(); 
+        SceneManager.UnloadSceneAsync("Scenes/Loading");
+     
     }
 
     IEnumerator LoadOnlineGameAsynchronously(string roomName)
     {
+        SceneManager.LoadScene("Scenes/Loading", LoadSceneMode.Additive);
+        
         AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
 
         while (!operation.isDone)
@@ -249,6 +256,7 @@ public class GameManager : MonoBehaviour
 
         networkManager.OnJoinedRoomEvent += OnJoinedRoom;
         networkManager.Connect(roomName);
+
     }
 
     public Map GetMap()

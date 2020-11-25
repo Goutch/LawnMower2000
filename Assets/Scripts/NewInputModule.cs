@@ -536,7 +536,6 @@ namespace UnityEngine.EventSystems
                 if (moveSecondSource.y > 0)
                     move.y = 1f;
             }
-            Debug.Log(move.x+" : "+move.y);
             return move;
         }
 

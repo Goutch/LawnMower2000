@@ -6,7 +6,6 @@ public class Player : MonoBehaviour
     private LawnMower lawnMower;
     private Options options;
     private GameManager gameManager;
-    private float lastTurned = 0;
     private bool readPlayerInputs;
     private bool hasResetStick = false;
     private bool hasResetCross = false;
@@ -16,8 +15,8 @@ public class Player : MonoBehaviour
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         options = gameManager.GetComponent<Options>();
         lawnMower = GetComponent<LawnMower>();
-        Camera.main.GetComponent<CameraMovement>().ObjectToFollow = gameObject.transform;
         readPlayerInputs = !gameManager.IsMenuOpen();
+        Camera.main.GetComponent<CameraMovement>().ObjectToFollow = gameObject.transform;
     }
 
     void Update()
@@ -40,7 +39,6 @@ public class Player : MonoBehaviour
             if (turn != 0)
             {
                 lawnMower.SetNextTurn(turn);
-                lastTurned = Time.time;
                 hasResetStick = false;
                 hasResetCross = false;
             }

@@ -33,8 +33,8 @@ public class Player : MonoBehaviour
             turn -= (Input.GetAxis("MoveHorizontalCross") == -1 && hasResetCross) ? 1 : 0;
             turn += (Input.GetAxis("MoveHorizontalCross") == 1 && hasResetCross) ? 1 : 0;
 
-            turn -= Input.GetKeyDown(options.TurnLeftKey) ? 1 : 0;
-            turn += Input.GetKeyDown(options.TurnRightKey) ? 1 : 0;
+            turn -= Input.GetKeyDown(options.Controls.left) ? 1 : 0;
+            turn += Input.GetKeyDown(options.Controls.right) ? 1 : 0;
             
             if (turn != 0)
             {
@@ -43,12 +43,12 @@ public class Player : MonoBehaviour
                 hasResetCross = false;
             }
 
-            if (Input.GetKeyDown(options.ContinueKey) || Input.GetButton("Continue") || Input.GetAxis("MoveVerticalCross")>0)
+            if (Input.GetKeyDown(options.Controls.foward) || Input.GetButton("Continue") || Input.GetAxis("MoveVerticalCross")>0)
             {
                 lawnMower.SetNextTurn(0);
             }
 
-            if (Input.GetKeyDown(options.ReadyKey) || Input.GetButton("Start"))
+            if (Input.GetKeyDown(options.Controls.startGame) || Input.GetButton("Start"))
             {
                 lawnMower.Ready = true;
             }

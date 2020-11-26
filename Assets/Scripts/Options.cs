@@ -1,108 +1,86 @@
-﻿using System;
-using System.Collections;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using System.IO;
 
 public class Options : MonoBehaviour
 {
+    private const string CONTROLS_PATH = "./Controls.json";
+
     public enum GameModeType
     {
         OfflineVsAI,
         Online,
     }
 
-    public const int AMOUNT_OF_KEY_BINDINGS = 4; //0 = start
-
+    public KeyBinding Controls { private set; get; }
     public GameModeType GameMode { set; get; } = GameModeType.OfflineVsAI;
     public Color LawnMower1Color { private set; get; } = Color.blue;
     public Color LawnMower2Color { private set; get; } = Color.red;
-    public KeyCode InGameMenuButtonKey { private set; get; } = KeyCode.Escape;
-    public KeyCode ContinueKey { private set; get; } = KeyCode.W;
-    public KeyCode TurnLeftKey { private set; get; } = KeyCode.A;
-    public KeyCode TurnRightKey { private set; get; } = KeyCode.D;
-    public KeyCode ReadyKey { private set; get; } = KeyCode.Return;
     public Vector2Int MapSize { private set; get; } = new Vector2Int(16, 16);
 
 
-    private Hashtable bindings;
+    private Dictionary<string, KeyCode> temporaryBindings = new Dictionary<string, KeyCode>();
 
     private void Start()
     {
         ReadKeyBindings();
     }
 
-    public void ReadKeyBindings()
-    {
-        string path = "Assets/Resources/Controls.txt";
-        StreamReader reader = new StreamReader(path);
-        string line;
-        bindings = new Hashtable();
-
-        while ((line = reader.ReadLine()) != null)
-        {
-            string[] txtLine = line.Split('=');
-            bindings.Add(txtLine[0], System.Enum.Parse(typeof(KeyCode), txtLine[1]));
-        }
-
-        Debug.Log(reader.ReadToEnd());
-        reader.Close();
-
-        if (bindings.Count < AMOUNT_OF_KEY_BINDINGS)
-        {
-            SetDefaultKeyBindings();
-        }
-        else
-        {
-            ApplyKeyBindings();
-        }
-    }
-
     public void ApplyKeyBindings()
     {
-        TurnRightKey = (KeyCode) bindings["R"];
-        TurnLeftKey = (KeyCode) bindings["L"];
-        ReadyKey = (KeyCode) bindings["S"];
-        InGameMenuButtonKey = (KeyCode) bindings["M"];
-        ContinueKey = (KeyCode) bindings["C"];
-
+        Controls.right = temporaryBindings["R"];
+        Controls.left = temporaryBindings["L"];
+        Controls.startGame = temporaryBindings["S"];
+        Controls.gameMenu = temporaryBindings["M"];
+        Controls.foward = temporaryBindings["C"];
         WriteKeyBindings();
     }
 
     public void SetKeyBinding(string key, KeyCode keyCode)
     {
-        bindings[key] = keyCode;
+        temporaryBindings[key] = keyCode;
     }
 
     private void WriteKeyBindings()
     {
-        string path = "Assets/Resources/Controls.txt";
-        StreamWriter writer = new StreamWriter(path, false);
+        string json = JsonUtility.ToJson(Controls);
+        StreamWriter writer = new StreamWriter(CONTROLS_PATH, false);
+        writer.Write(json);
+        writer.Close();
+    }
 
-        ICollection keys = bindings.Keys;
-
-        foreach (string k in keys)
+    public void ReadKeyBindings()
+    {
+        if (File.Exists(CONTROLS_PATH))
         {
-            writer.WriteLine(k + "=" + bindings[k]);
+            StreamReader reader = new StreamReader(CONTROLS_PATH);
+            Controls = JsonUtility.FromJson<KeyBinding>(reader.ReadToEnd());
+            reader.Close();
+        }
+        else
+        {
+            Controls = new KeyBinding();
         }
 
-        writer.Close();
+        temporaryBindings["R"] = Controls.right;
+        temporaryBindings["L"] = Controls.left;
+        temporaryBindings["S"] = Controls.startGame;
+        temporaryBindings["M"] = Controls.gameMenu;
+        temporaryBindings["C"] = Controls.foward;
     }
 
     public void SetDefaultKeyBindings()
     {
-        bindings["R"] = KeyCode.D;
-        bindings["L"] = KeyCode.A;
-        bindings["S"] = KeyCode.Return;
-        bindings["M"] = KeyCode.Escape;
-        bindings["C"] = KeyCode.W;
-
-        WriteKeyBindings();
+        Controls = new KeyBinding();
+        temporaryBindings["R"] = Controls.right;
+        temporaryBindings["L"] = Controls.left;
+        temporaryBindings["S"] = Controls.startGame;
+        temporaryBindings["M"] = Controls.gameMenu;
+        temporaryBindings["C"] = Controls.foward;
     }
 
     public KeyCode getKeyBinding(string key)
     {
-        return (KeyCode) bindings[key];
+        return temporaryBindings[key];
     }
 }

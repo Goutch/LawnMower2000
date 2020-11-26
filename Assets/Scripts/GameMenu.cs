@@ -79,7 +79,7 @@ public class GameMenu : MonoBehaviour
             startGameText.gameObject.SetActive(false);
         }
 
-        if (Input.GetKeyDown(options.InGameMenuButtonKey) || Input.GetButtonDown("Menu"))
+        if (Input.GetKeyDown(options.Controls.gameMenu) || Input.GetButtonDown("Menu"))
         {
             menuPanel.SetActive(!menuPanel.activeSelf);
             if (menuPanel.activeSelf)

@@ -14,7 +14,7 @@ public class CameraMovement : MonoBehaviour
 
     private Vector3 smoothVelocity;
 
-    void Update()
+    void LateUpdate()
     {
         if (ObjectToFollow != null)
         {

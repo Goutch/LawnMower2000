@@ -92,11 +92,11 @@ public class AI : MonoBehaviour
                     break;
             }
 
-            if (map.ContainPosition(front) && map.GetTile(front) != Map.TileType.Wall && !closed.Contains(front))
+            if (map.ContainPosition(front) && map.GetTile(front) != Map.TileType.Rock && !closed.Contains(front))
                 open.Enqueue(new Node(front, current, orientation));
-            if (map.ContainPosition(right) && map.GetTile(right) != Map.TileType.Wall && !closed.Contains(right))
+            if (map.ContainPosition(right) && map.GetTile(right) != Map.TileType.Rock && !closed.Contains(right))
                 open.Enqueue(new Node(right, current, (LawnMower.Orientation) (((int) orientation + 1) % 4)));
-            if (map.ContainPosition(left) && map.GetTile(left) != Map.TileType.Wall && !closed.Contains(left))
+            if (map.ContainPosition(left) && map.GetTile(left) != Map.TileType.Rock && !closed.Contains(left))
                 open.Enqueue(new Node(left, current, (LawnMower.Orientation) (((int) orientation + 3) % 4)));
         }
 

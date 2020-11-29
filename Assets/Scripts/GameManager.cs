@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
         {
             PhotonNetwork.Destroy(Player.GetComponentInParent<PhotonView>());
             LawnMowers.Clear();
-            map.Init(0);
+            map.Reset();
 
             LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower", map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
             Player = lawnMower1;
@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
 
             LawnMowers.Clear();
 
-            map.Init(0);
+            map.Reset();
 
             LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
             LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();

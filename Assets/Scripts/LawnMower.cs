@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Tilemaps;
 
 
@@ -48,7 +49,7 @@ public class LawnMower : MonoBehaviour
     private SpriteRenderer spriteRenderer = null;
 
     private Color color = Color.white;
-
+    private bool mowing=false;
     public Color Color
     {
         get { return color; }
@@ -79,32 +80,48 @@ public class LawnMower : MonoBehaviour
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         gameManager.OnGameStart += OnGameStart;
-
+        gameManager.OnGameFinish += OnGameFinish;
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+    }
+
+    private void OnGameFinish()
+    {
+        mowing = false;
     }
 
     void OnDisable()
     {
         gameManager.OnGameStart -= OnGameStart;
+        gameManager.OnGameFinish -= OnGameFinish;
     }
 
     private void OnGameStart()
     {
         map = gameManager.GetMap();
         FindNextPosition();
-        Mow();
+        GetPoint();
+        mowing = true;
+        StartCoroutine(MowMapRoutine());
     }
 
+    IEnumerator MowMapRoutine()
+    {
+        while (mowing)
+        {
+            yield return new WaitForSeconds(0.1f);
+            map.mow(transform.position);
+        }
+    }
     void Update()
     {
         transform.rotation = Quaternion.AngleAxis((int) OrientationLawnMower * -90, Vector3.forward);
 
-        if (gameManager.GameStarted)
+        if (mowing)
         {
             bool hitWall = false;
             //move if does not it wall
             Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
-            if (map.GetTile(frontPosition) != Map.TileType.Wall)
+            if (map.GetTile(frontPosition) != Map.TileType.Rock)
             {
                 transform.Translate(Vector3.up * Time.deltaTime);
             }
@@ -129,15 +146,15 @@ public class LawnMower : MonoBehaviour
                 map.WorldToGrid(transform.position) == nextTilePosition &&
                 map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
             {
-                Mow();
+                GetPoint();
                 Turn();
                 NextTurn = 0;
                 OnReachedDestination?.Invoke(nextTilePosition, OrientationLawnMower);
             }
         }
     }
-
-    private void Mow()
+    
+    private void GetPoint()
     {
         Vector2Int gridPosition = map.WorldToGrid(transform.position);
         if (map.GetTile(gridPosition) == Map.TileType.Grass)

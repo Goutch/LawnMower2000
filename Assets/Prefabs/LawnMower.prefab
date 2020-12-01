@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3214685509224301653}
   - component: {fileID: 2472945969677757126}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8602698072774243049}
   - component: {fileID: 3615130346238217075}
-  m_Layer: 0
+  - component: {fileID: 1342448351175105736}
+  m_Layer: 10
   m_Name: LawnMower
   m_TagString: LawnMower
   m_Icon: {fileID: 0}
@@ -129,7 +130,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextTurn: 0
   front: {fileID: 6709737427120792345}
-  gameManager: {fileID: 0}
+--- !u!114 &1342448351175105736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3165817870513948915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4abd3a54001469f44bf180f54da6fc5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxParticules: 1000
+  particuleLifeTime: 3
+  spawnRatePerSeconds: 0.02
+  initialSpeed: 0.3
+  initialUpVelocity: 0.3
+  gravity: -0.3
+  lossOfMomentum: 0.99
+  minZ: 0.6
 --- !u!1 &8113171275930122537
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +159,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6709737427120792345}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}

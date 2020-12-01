@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
 
             LawnMowers.Clear();
 
-            map.Reset();
+            map.Generate(Random.Range(0,int.MaxValue));
 
             LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
             LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
@@ -148,8 +148,8 @@ public class GameManager : MonoBehaviour
 
         //Map
         map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
-        map.Init(0);
-
+        map.Init(Random.Range(0,int.MaxValue));
+        
         LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
         LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 

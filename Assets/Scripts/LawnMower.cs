@@ -38,8 +38,11 @@ public class LawnMower : MonoBehaviour
     }
 
     [SerializeField] private Transform front;
+    public Transform Front => front;
+
     private Vector2Int nextTilePosition;
-    [SerializeField] private GameManager gameManager;
+    private GameManager gameManager;
+
 
     private Map map;
     private int points = 0;
@@ -49,7 +52,13 @@ public class LawnMower : MonoBehaviour
     private SpriteRenderer spriteRenderer = null;
 
     private Color color = Color.white;
-    private bool mowing=false;
+    private bool mowing = false;
+    private bool isStuck = false;
+
+    public bool IsStuck => isStuck;
+
+    public bool Mowing => mowing;
+
     public Color Color
     {
         get { return color; }
@@ -109,16 +118,18 @@ public class LawnMower : MonoBehaviour
         while (mowing)
         {
             yield return new WaitForSeconds(0.1f);
-            map.mow(transform.position);
+            map.MowMap(transform.position);
         }
     }
+
     void Update()
     {
+        isStuck = false;
         transform.rotation = Quaternion.AngleAxis((int) OrientationLawnMower * -90, Vector3.forward);
-
         if (mowing)
         {
-            bool hitWall = false;
+
+
             //move if does not it wall
             Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
             if (map.GetTile(frontPosition) != Map.TileType.Rock)
@@ -128,7 +139,7 @@ public class LawnMower : MonoBehaviour
             //turn if hit wall and has next turn
             else
             {
-                hitWall = true;
+                isStuck = true;
                 if (NextTurn != 0)
                 {
                     Turn();
@@ -142,7 +153,7 @@ public class LawnMower : MonoBehaviour
             }
 
             //is in the middle of a tile
-            if (!hitWall &&
+            if (!isStuck &&
                 map.WorldToGrid(transform.position) == nextTilePosition &&
                 map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
             {
@@ -153,7 +164,7 @@ public class LawnMower : MonoBehaviour
             }
         }
     }
-    
+
     private void GetPoint()
     {
         Vector2Int gridPosition = map.WorldToGrid(transform.position);
@@ -183,7 +194,7 @@ public class LawnMower : MonoBehaviour
                 break;
         }
     }
-
+    
     private void Turn()
     {
         NumberOfTurn++;

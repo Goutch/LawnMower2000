@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
-using UnityEngine.Serialization;
-using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
 public class Map : MonoBehaviour
@@ -16,8 +13,7 @@ public class Map : MonoBehaviour
         Grass = 1,
         Rock = 2,
     }
-
-    [SerializeField] private Shader mapShader;
+    
     [SerializeField] private ComputeShader maskCompute;
     [SerializeField] private Color32 grassColor1 = new Color32(255, 255, 255, 255);
     [SerializeField] private Color32 grassColor2 = new Color32(255, 255, 255, 255);
@@ -25,6 +21,9 @@ public class Map : MonoBehaviour
     [SerializeField] private Color32 dirtColor = new Color32(255, 255, 255, 255);
     [SerializeField] private FilterMode filerMode;
     [SerializeField] private int pixelsPerUnits = 16;
+
+
+    public int PixelsPerUnits => pixelsPerUnits;
 
     private TileType[,] map;
     private GameManager gameManager;
@@ -39,11 +38,12 @@ public class Map : MonoBehaviour
     private Texture2D grassTexture;
     private Texture2D grassMaskTexture;
     private Texture2D rockTexture;
-
+    private Mesh quad;
     private Grid grid;
     private int sizeX;
     private int sizeY;
     private int seed;
+    float noiseOffset;
 
     public void Init(int seed)
     {
@@ -52,37 +52,34 @@ public class Map : MonoBehaviour
         sizeX = options.MapSize.x;
         sizeY = options.MapSize.y;
         grid = GetComponent<Grid>();
-        Random.InitState(seed);
-        Random.InitState((new System.Random()).Next());
 
         Camera.main.transform.position = new Vector3(sizeX / 2f, sizeY / 2f, -1);
         Camera.main.orthographicSize = options.MapSize.y / 2f;
-        Mesh quad = new Mesh();
-        quad.vertices = new Vector3[4]
-        {
-            new Vector3(0, 0, 0),
-            new Vector3(sizeX, 0, 0),
-            new Vector3(0, sizeY, 0),
-            new Vector3(sizeX, sizeY, 0)
-        };
-        quad.uv = new Vector2[4]
-        {
-            new Vector2(0, 0),
-            new Vector2(1, 0),
-            new Vector2(0, 1),
-            new Vector2(1, 1)
-        };
-        quad.SetIndices(new int[] {0, 2, 1, 2, 3, 1}, MeshTopology.Triangles, 0);
+        quad = GeometryUtils.CreateQuad(sizeX, sizeY, false);
+
         for (int i = 0; i < 3; i++)
         {
             meshFilters[i] = new GameObject().AddComponent<MeshFilter>();
             meshRenderers[i] = meshFilters[i].gameObject.AddComponent<MeshRenderer>();
             meshRenderers[i].shadowCastingMode = ShadowCastingMode.Off;
-            meshRenderers[i].material = new Material(mapShader);
+            meshRenderers[i].material = new Material(Shader.Find("Custom/MapShader"));
             meshFilters[i].mesh = quad;
             meshFilters[i].transform.parent = transform;
-            meshFilters[i].transform.position = new Vector3(0, 0, -1 - i);
         }
+
+        meshFilters[0].transform.position = new Vector3(0, 0, 2);//behind grass(z=1) and lawnmowers(z=0)
+        meshFilters[1].transform.position = new Vector3(0, 0, 1);//behind lawnmowers(z=0)
+        meshFilters[2].transform.position = new Vector3(0, 0, -1);//front of lawnmowers(z=0)
+
+        Generate(seed);
+    }
+
+    public void Generate(int seed)
+    {
+        this.seed = seed;
+
+        Random.InitState(seed);
+        Random.InitState((new System.Random()).Next());
 
         dirtTexture = new Texture2D(sizeX * pixelsPerUnits, sizeY * pixelsPerUnits, TextureFormat.RGBA32, false);
         grassTexture = new Texture2D(sizeX * pixelsPerUnits, sizeY * pixelsPerUnits, TextureFormat.RGBA32, false);
@@ -100,12 +97,25 @@ public class Map : MonoBehaviour
         meshRenderers[1].material.SetFloat("_AlphaTexEnabled", 1.0f);
         meshRenderers[2].material.mainTexture = rockTexture;
 
-        GenerateRandomMap();
+        FillMap();
 
         dirtTexture.Apply(false, false);
         grassTexture.Apply(false, false);
         grassMaskTexture.Apply(false, false);
         rockTexture.Apply(false, false);
+    }
+
+    public Color SampleMap(Vector3 worldPosition)
+    {
+        if (ContainPosition(WorldToGrid(worldPosition)))
+        {
+            worldPosition *= PixelsPerUnits;
+            return grassMaskTexture.GetPixel((int) worldPosition.x, (int) worldPosition.y).a < .5
+                ? dirtTexture.GetPixel((int) worldPosition.x, (int) worldPosition.y)
+                : grassTexture.GetPixel((int) worldPosition.x, (int) worldPosition.y);
+        }
+
+        return new Color(1, 1, 1, 1);
     }
 
     public int GetSeed()
@@ -117,11 +127,11 @@ public class Map : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
         {
-            mow(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            MowMap(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         }
     }
 
-    public void mow(Vector3 position)
+    public void MowMap(Vector3 position)
     {
         position *= pixelsPerUnits;
         int kernelHandle = maskCompute.FindKernel("CSMain");
@@ -131,7 +141,7 @@ public class Map : MonoBehaviour
 
         maskCompute.SetTexture(kernelHandle, "Result", tex);
         maskCompute.SetTexture(kernelHandle, "ImageInput", grassMaskTexture);
-        maskCompute.SetFloat("Range", (pixelsPerUnits / 2.0f) + 0.5f);
+        maskCompute.SetFloat("Range", (pixelsPerUnits / 2.0f) + 0.1f);
         maskCompute.SetFloats("Position", new float[2] {position.x, position.y});
         maskCompute.Dispatch(kernelHandle, grassMaskTexture.width / 8, grassMaskTexture.height / 8, 1);
 
@@ -148,7 +158,7 @@ public class Map : MonoBehaviour
 
     private float RockNoise(float x, float y)
     {
-        return Mathf.PerlinNoise(0.01f + x * 0.5f, 0.5f + y * 0.5f);
+        return Mathf.PerlinNoise(noiseOffset + 0.01f + x * 0.5f, noiseOffset + 0.5f + y * 0.5f);
     }
 
     private float GetDistanceToClosestRock(Vector3 worldPosition)
@@ -243,8 +253,10 @@ public class Map : MonoBehaviour
         grassMaskTexture.Apply();
     }
 
-    private void GenerateRandomMap()
+    private void FillMap()
     {
+        noiseOffset = Random.Range(0.0f, 10000.0f);
+        //***************TILE_MAP***************
         possibleSpawnPoint = new List<Vector2Int>();
         map = new TileType[sizeX, sizeY];
         for (int x = 0; x < sizeX; x++)
@@ -289,7 +301,7 @@ public class Map : MonoBehaviour
                     ClampByte(dirtColor.b + dirtShift),
                     dirtColor.a);
                 //**************GRASS*********************
-                Color32 grassColor = Color32.Lerp(grassColor1, grassColor2, Mathf.PerlinNoise(x * 0.01f + 0.5f, y * 0.01f + 0.5f));
+                Color32 grassColor = Color32.Lerp(grassColor1, grassColor2, Mathf.PerlinNoise(noiseOffset + x * 0.01f + 0.5f, noiseOffset + y * 0.01f + 0.5f));
                 grassPixels[count] = new Color32(
                     ClampByte(grassColor.r + grassShift),
                     ClampByte(grassColor.g + grassShift),
@@ -313,12 +325,12 @@ public class Map : MonoBehaviour
                 else if (distToClosestRock <= pixelsPerUnits)
                 {
                     float noise = RockNoise(x / (float) pixelsPerUnits, y / (float) pixelsPerUnits);
-                    float distRatio =  distToClosestRock / pixelsPerUnits;
-                    noise *= Mathf.SmoothStep(2,0,distRatio);
+                    float distRatio = distToClosestRock / pixelsPerUnits;
+                    noise *= Mathf.SmoothStep(2, 0, distRatio);
 
                     if (noise >= 0.7)
                     {
-                        float t = 1- ((noise - 0.7f) / .3f);
+                        float t = 1 - ((noise - 0.7f) / .3f);
                         rockShift += (int) Mathf.Lerp(-50, 30, t);
                         rockPixels[count] = new Color32(
                             ClampByte(rockColor.r - (int) rockShift),
@@ -348,15 +360,30 @@ public class Map : MonoBehaviour
         {
             int pos = Random.Range(0, grassPixels.Length - 1);
 
-            grassPixels[pos] = new Color32(255, 255, 0, 255);
+            grassPixels[pos] = new Color32(100, 100, 0, 255);
             if (pos < grassPixels.Length - 1)
-                grassPixels[pos + 1] = new Color32(255, 255, 255, 255);
+                grassPixels[pos + 1] = new Color32(200, 200, 0, 255);
             if (pos > 0)
-                grassPixels[pos - 1] = new Color32(255, 255, 255, 255);
+                grassPixels[pos - 1] = new Color32(200, 200, 0, 255);
             if (pos < grassPixels.Length - 1 - grassTexture.width)
-                grassPixels[pos + grassTexture.width] = new Color32(255, 255, 255, 255);
+                grassPixels[pos + grassTexture.width] = new Color32(200, 200, 0, 255);
             if (pos > grassTexture.width)
-                grassPixels[pos - grassTexture.width] = new Color32(255, 255, 255, 255);
+                grassPixels[pos - grassTexture.width] = new Color32(200, 200, 0, 255);
+        }
+
+        for (int x = 0; x < 50; x++)
+        {
+            int pos = Random.Range(0, grassPixels.Length - 1);
+
+            grassPixels[pos] = new Color32(200, 50, 0, 255);
+            if (pos < grassPixels.Length - 1)
+                grassPixels[pos + 1] = new Color32(255, 50, 0, 255);
+            if (pos > 0)
+                grassPixels[pos - 1] = new Color32(255, 50, 0, 255);
+            if (pos < grassPixels.Length - 1 - grassTexture.width)
+                grassPixels[pos + grassTexture.width] = new Color32(255, 50, 0, 255);
+            if (pos > grassTexture.width)
+                grassPixels[pos - grassTexture.width] = new Color32(255, 50, 0, 255);
         }
 
 

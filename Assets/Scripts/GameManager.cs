@@ -1,10 +1,5 @@
-﻿using Photon.Pun;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Globalization;
-using System.Linq;
-using System.Timers;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;

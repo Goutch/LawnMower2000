@@ -8,7 +8,7 @@ using Vector4 = UnityEngine.Vector4;
 
 public class MowParticules : MonoBehaviour
 {
-    [SerializeField] private int maxParticules = 100;
+    [SerializeField] private int maxParticules = 1000;
     [SerializeField] float particuleLifeTime = 2;
     [SerializeField] private float spawnRatePerSeconds = 0.1f;
     [SerializeField] private float initialSpeed = 0.5f;
@@ -16,6 +16,7 @@ public class MowParticules : MonoBehaviour
     [SerializeField] private float gravity = -.98f;
     [SerializeField] private float lossOfMomentum = 0.99f;
     [SerializeField] private float minZ = 0.6f;
+    [SerializeField] private float spread = 3;
     private Material material;
     private LawnMower lawnMower;
     private Mesh quad;
@@ -69,10 +70,7 @@ public class MowParticules : MonoBehaviour
                 velocities[i] = velocities[currentParticulesCount];
                 colors[i] = colors[currentParticulesCount];
             }
-        }
 
-        for (int i = 0; i < currentParticulesCount; i++)
-        {
             if (particules[i].m23 < minZ)
             {
                 velocities[i].x *= lossOfMomentum;
@@ -104,8 +102,8 @@ public class MowParticules : MonoBehaviour
             {
                 particules[currentParticulesCount] = Matrix4x4.Translate(new Vector3(transform.position.x, transform.position.y, .5f));
                 velocities[currentParticulesCount] = new Vector4(
-                    ((rnd.Next(-50, 50) / 100f) * 2) + (-transform.up.x * initialSpeed),
-                    (rnd.Next(-50, 50) / 100f) + (-transform.up.y * initialSpeed),
+                    ((rnd.Next(-50, 50) / 100f) * spread) + (-transform.up.x * initialSpeed),
+                    ((rnd.Next(-50, 50) / 100f) * spread) + (-transform.up.y * initialSpeed),
                     -initialUpVelocity,
                     0);
                 timeToLive[currentParticulesCount] = particuleLifeTime;
@@ -127,6 +125,7 @@ public class MowParticules : MonoBehaviour
                 colors[currentParticulesCount] = color;
                 currentParticulesCount++;
             }
+
         }
     }
 }

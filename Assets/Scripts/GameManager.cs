@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
     {
         effectsSource.clip = victorySound;
         mainAudioSource.Stop();
+        StopAllCoroutines();
         OnGameFinish?.Invoke();
         GameFinished = true;
         effectsSource.Play();

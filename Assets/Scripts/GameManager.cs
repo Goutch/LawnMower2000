@@ -52,9 +52,7 @@ public class GameManager : MonoBehaviour
 
     void StartGame()
     {
-        Map = Instantiate(MapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
-        Map.Init(Random.Range(0, int.MaxValue));
-
+        Map.Generate(Random.Range(0, int.MaxValue));
         //gameDuration = (((Options.MapSize.x - 2) * (Options.MapSize.y - 2)) / 2) - 4;
         gameDuration = 10;
 
@@ -107,10 +105,8 @@ public class GameManager : MonoBehaviour
         }
 
         SceneManager.SetActiveScene(SceneManager.GetSceneByName("Game"));
-
-
+        Map = Instantiate(MapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
         StartGame();
-
         LoadingText.text = "Loading completed";
         LoadingPanel.SetActive(false);
     }
@@ -132,7 +128,6 @@ public class GameManager : MonoBehaviour
 
         Destroy(Player.gameObject);
         Destroy(AI.gameObject);
-        Destroy(Map.gameObject);
     }
 
     public void RestartGame()
@@ -142,8 +137,7 @@ public class GameManager : MonoBehaviour
             FinishGame();
         }
 
-        Map = Instantiate(MapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
-        Map.Init(Random.Range(0, int.MaxValue));
+        Map.Generate(Random.Range(0,int.MaxValue));
 
         Player = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
         AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();

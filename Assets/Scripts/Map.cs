@@ -45,7 +45,7 @@ public class Map : MonoBehaviour
     private int seed;
     float noiseOffset;
 
-    public void Init(int seed)
+    public void OnEnable()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         options = gameManager.GetComponent<Options>();
@@ -70,8 +70,6 @@ public class Map : MonoBehaviour
         meshFilters[0].transform.position = new Vector3(0, 0, 2);//behind grass(z=1) and lawnmowers(z=0)
         meshFilters[1].transform.position = new Vector3(0, 0, 1);//behind lawnmowers(z=0)
         meshFilters[2].transform.position = new Vector3(0, 0, -1);//front of lawnmowers(z=0)
-
-        Generate(seed);
     }
 
     public void Generate(int seed)

@@ -140,11 +140,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4abd3a54001469f44bf180f54da6fc5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxParticules: 100
-  particuleLifeTime: 2
-  spawnRatePerSeconds: 0.1
+  maxParticules: 1000
+  particuleLifeTime: 3
+  spawnRatePerSeconds: 0.02
   initialSpeed: 0.5
-  initialUpVelocity: 1
+  initialUpVelocity: 0.3
   gravity: -0.98
   lossOfMomentum: 0.99
   minZ: 0.6

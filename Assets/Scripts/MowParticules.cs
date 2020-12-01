@@ -31,7 +31,7 @@ public class MowParticules : MonoBehaviour
     MaterialPropertyBlock colorsProperty;
     private Random rnd;
 
-    private void Start()
+    private void OnEnable()
     {
         rnd = new Random();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
@@ -64,14 +64,14 @@ public class MowParticules : MonoBehaviour
         for (int i = particules.Count - 1; i >= 0; i--)
         {
             timeToLive[i] -= Time.deltaTime;
-            if (particules[i].m23 > minZ || timeToLive[i] <= 0)
+            if (timeToLive[i] <= 0)
             {
                 particules.RemoveAt(i);
                 timeToLive.RemoveAt(i);
                 velocities.RemoveAt(i);
                 colors.RemoveAt(i);
             }
-            else
+            else if (particules[i].m23 < minZ)
             {
                 velocities[i] = new Vector4(
                     velocities[i].x * lossOfMomentum,

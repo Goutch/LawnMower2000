@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
-
 
 public class LawnMower : MonoBehaviour
 {
@@ -52,7 +50,7 @@ public class LawnMower : MonoBehaviour
 
     public Orientation OrientationLawnMower { get; set; } = 0;
 
-    public bool Mowing { set;  get; } = true;
+    public bool Mowing { private set;  get; } = false;
     public bool IsStuck { set; get; } = false;
     #endregion Attribut
 
@@ -83,7 +81,7 @@ public class LawnMower : MonoBehaviour
     private void GameManager_OnGameStart()
     {
         GetPoint();
-
+        Mowing = true;
         Vector2Int currentTile = gameManager.Map.WorldToGrid(transform.position);
         Destination = FindDestination();
         StartCoroutine(MowMapRoutine());

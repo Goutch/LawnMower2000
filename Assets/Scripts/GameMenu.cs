@@ -22,7 +22,7 @@ public class GameMenu : MonoBehaviour
     [SerializeField] private Text playerTwoPoints = null;
     [SerializeField] private Image playerOneColor = null;
     [SerializeField] private Image playerTwoColor = null;
-
+    [SerializeField] private GameObject warningText = null;
     [SerializeField] private Text timeText = null;
 
     private GameManager gameManager;
@@ -38,16 +38,24 @@ public class GameMenu : MonoBehaviour
         menuPanel.SetActive(false);
         endGamePanel.SetActive(false);
         eventSystem = menuPanel.GetComponentInChildren<EventSystem>();
+        warningText.SetActive(false);
     }
 
     private void OnEnable()
     {
         gameManager.OnGameFinish += GameManager_OnGameFinish;
+        gameManager.OnWarning += GameManger_OnWarning;
     }
 
     private void OnDisable()
     {
+        gameManager.OnWarning -= GameManger_OnWarning;
         gameManager.OnGameFinish -= GameManager_OnGameFinish;
+    }
+
+    private void GameManger_OnWarning()
+    {
+        StartCoroutine(setWarning());
     }
 
     private void GameManager_OnGameFinish()
@@ -71,7 +79,7 @@ public class GameMenu : MonoBehaviour
             if (menuPanel.activeSelf)
             {
                 Time.timeScale = 0;
-
+                gameManager.PauseMusic();
                 EventSystem.current = eventSystem;
                 eventSystem.SetSelectedGameObject(null);
                 eventSystem.SetSelectedGameObject(backToMenuButton.gameObject);
@@ -79,6 +87,7 @@ public class GameMenu : MonoBehaviour
             else
             {
                 Time.timeScale = 1;
+                gameManager.PauseMusic();
             }
         }
 
@@ -107,5 +116,20 @@ public class GameMenu : MonoBehaviour
     {
         gameManager.RestartGame();
         endGamePanel.SetActive(false);
+    }
+
+    IEnumerator setWarning()
+    {
+        warningText.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        warningText.SetActive(false);
+        yield return new WaitForSeconds(0.3f);
+        warningText.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        warningText.SetActive(false);
+        yield return new WaitForSeconds(0.3f);
+        warningText.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        warningText.SetActive(false);
     }
 }

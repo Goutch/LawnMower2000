@@ -56,7 +56,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e10e53518a0fd541a6528580316fa2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapShader: {fileID: 4800000, guid: f562105fc4b676d4b87be7be152f5148, type: 3}
   maskCompute: {fileID: 7200000, guid: fab4f4e58584d184aa7ceaae9a5dc6ec, type: 3}
   grassColor1:
     serializedVersion: 2

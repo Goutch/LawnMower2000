@@ -13,7 +13,7 @@ public class Map : MonoBehaviour
         Grass = 1,
         Rock = 2,
     }
-    
+
     [SerializeField] private ComputeShader maskCompute;
     [SerializeField] private Color32 grassColor1 = new Color32(255, 255, 255, 255);
     [SerializeField] private Color32 grassColor2 = new Color32(255, 255, 255, 255);
@@ -67,9 +67,9 @@ public class Map : MonoBehaviour
             meshFilters[i].transform.parent = transform;
         }
 
-        meshFilters[0].transform.position = new Vector3(0, 0, 2);//behind grass(z=1) and lawnmowers(z=0)
-        meshFilters[1].transform.position = new Vector3(0, 0, 1);//behind lawnmowers(z=0)
-        meshFilters[2].transform.position = new Vector3(0, 0, -1);//front of lawnmowers(z=0)
+        meshFilters[0].transform.position = new Vector3(0, 0, 2); //behind grass(z=1) and lawnmowers(z=0)
+        meshFilters[1].transform.position = new Vector3(0, 0, 1); //behind lawnmowers(z=0)
+        meshFilters[2].transform.position = new Vector3(0, 0, -1); //front of lawnmowers(z=0)
     }
 
     public void Generate(int seed)
@@ -163,21 +163,23 @@ public class Map : MonoBehaviour
         Vector2Int gridPosition = new Vector2Int(
             (int) Mathf.Floor(worldPosition.x),
             (int) Mathf.Floor(worldPosition.y));
-
-        if (GetTile(worldPosition) == TileType.Rock)
+        List<float> distances = new List<float>();
+        if (gridPosition.x == 0 || gridPosition.y == 0 || gridPosition.x == sizeX - 1 || gridPosition.y == sizeY - 1)
         {
-            return Vector2.Distance(
+            distances.Add(Vector2.Distance(worldPosition, new Vector2(worldPosition.x, 0)) * pixelsPerUnits / 2f);
+            distances.Add(Vector2.Distance(worldPosition, new Vector2(0, worldPosition.y)) * pixelsPerUnits / 2f);
+            distances.Add(Vector2.Distance(worldPosition, new Vector2(worldPosition.x, sizeY)) * pixelsPerUnits / 2f);
+            distances.Add(Vector2.Distance(worldPosition, new Vector2(sizeX, worldPosition.y)) * pixelsPerUnits / 2f);
+        }
+
+        else if (GetTile(worldPosition) == TileType.Rock)
+        {
+            distances.Add(Vector2.Distance(
                 new Vector2((gridPosition.x * pixelsPerUnits) + (pixelsPerUnits / 2.0f), (gridPosition.y * pixelsPerUnits) + (pixelsPerUnits / 2.0f)),
-                new Vector2(worldPosition.x * pixelsPerUnits, worldPosition.y * pixelsPerUnits));
+                new Vector2(worldPosition.x * pixelsPerUnits, worldPosition.y * pixelsPerUnits)));
         }
         else
         {
-            float[] distanceAdjacents = new float[8]
-            {
-                float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue,
-                float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue
-            };
-            int count = 0;
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
@@ -187,24 +189,22 @@ public class Map : MonoBehaviour
                         Vector2Int pos = new Vector2Int(gridPosition.x + j, gridPosition.y + i);
                         if (GetTile(pos) == TileType.Rock)
                         {
-                            distanceAdjacents[count] = Vector2.Distance(
+                            distances.Add(Vector2.Distance(
                                 new Vector2((pos.x * pixelsPerUnits) + (pixelsPerUnits / 2.0f), (pos.y * pixelsPerUnits) + (pixelsPerUnits / 2.0f)),
-                                new Vector2(worldPosition.x * pixelsPerUnits, worldPosition.y * pixelsPerUnits));
+                                new Vector2(worldPosition.x * pixelsPerUnits, worldPosition.y * pixelsPerUnits)));
                         }
-
-                        count++;
                     }
                 }
             }
-
-            float min = float.MaxValue;
-            for (int i = 0; i < 8; i++)
-            {
-                min = Mathf.Min(distanceAdjacents[i], min);
-            }
-
-            return min;
         }
+
+        float min = float.MaxValue;
+        foreach (float dist in distances)
+        {
+            min = Mathf.Min(dist, min);
+        }
+
+        return min;
     }
 
     public void Reset()
@@ -222,7 +222,7 @@ public class Map : MonoBehaviour
                 }
                 else
                 {
-                    float noise = RockNoise(0.5f + x, 0.5f + y);
+                    float noise = RockNoise(x, y);
                     if (noise >= 0.7f)
                     {
                         SetTile(x, y, TileType.Rock);
@@ -266,7 +266,7 @@ public class Map : MonoBehaviour
                 }
                 else
                 {
-                    float noise = RockNoise(0.5f + x, 0.5f + y);
+                    float noise = RockNoise(x, y);
                     if (noise >= 0.7f)
                     {
                         SetTile(x, y, TileType.Rock);
@@ -311,28 +311,19 @@ public class Map : MonoBehaviour
 
                 int rockShift = Random.Range(-10, 10);
                 float distToClosestRock = GetDistanceToClosestRock(new Vector3(x / (float) pixelsPerUnits, y / (float) pixelsPerUnits, 0));
-                if (gridPosition.x == 0 || gridPosition.y == 0 || gridPosition.x == sizeX - 1 || gridPosition.y == sizeY - 1)
+                if (distToClosestRock <= pixelsPerUnits)
                 {
-                    rockPixels[count] = new Color32(
-                        ClampByte(rockColor.r + rockShift),
-                        ClampByte(rockColor.b + rockShift),
-                        ClampByte(rockColor.g + rockShift),
-                        rockColor.a);
-                }
-                else if (distToClosestRock <= pixelsPerUnits)
-                {
-                    float noise = RockNoise(x / (float) pixelsPerUnits, y / (float) pixelsPerUnits);
-                    float distRatio = distToClosestRock / pixelsPerUnits;
-                    noise *= Mathf.SmoothStep(2, 0, distRatio);
-
-                    if (noise >= 0.7)
+                    float noise = Mathf.PerlinNoise(
+                        noiseOffset + (x * 0.1f),
+                        noiseOffset + (y * 0.1f));
+                    float radius = Mathf.SmoothStep(pixelsPerUnits / 4f, pixelsPerUnits - (pixelsPerUnits / 4f), noise);
+                    if (distToClosestRock < radius)
                     {
-                        float t = 1 - ((noise - 0.7f) / .3f);
-                        rockShift += (int) Mathf.Lerp(-50, 30, t);
+                        rockShift -= (int)((distToClosestRock / radius) * pixelsPerUnits*5);
                         rockPixels[count] = new Color32(
-                            ClampByte(rockColor.r - (int) rockShift),
-                            ClampByte(rockColor.b - (int) rockShift),
-                            ClampByte(rockColor.g - (int) rockShift),
+                            ClampByte(rockColor.r + (int) rockShift),
+                            ClampByte(rockColor.b + (int) rockShift),
+                            ClampByte(rockColor.g + (int) rockShift),
                             rockColor.a);
                     }
                     else

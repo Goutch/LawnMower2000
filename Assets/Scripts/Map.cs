@@ -314,8 +314,8 @@ public class Map : MonoBehaviour
                 if (distToClosestRock <= pixelsPerUnits)
                 {
                     float noise = Mathf.PerlinNoise(
-                        noiseOffset + (x * 0.1f),
-                        noiseOffset + (y * 0.1f));
+                        noiseOffset + (x * 0.08f),
+                        noiseOffset + (y * 0.08f));
                     float radius = Mathf.SmoothStep(pixelsPerUnits / 4f, pixelsPerUnits - (pixelsPerUnits / 4f), noise);
                     if (distToClosestRock < radius)
                     {

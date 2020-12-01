@@ -29,7 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8602698072774243049}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2472945969677757126
 SpriteRenderer:
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8602698072774243049}
   - component: {fileID: 3615130346238217075}
-  - component: {fileID: 1342448351175105736}
+  - component: {fileID: 2876211866095677090}
   m_Layer: 10
   m_Name: LawnMower
   m_TagString: LawnMower
@@ -111,7 +111,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 6709737427120792345}
   - {fileID: 3214685509224301653}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -128,9 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 609118f512c51b94eae0b71485755585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextTurn: 0
-  front: {fileID: 6709737427120792345}
---- !u!114 &1342448351175105736
+  Speed: 1
+--- !u!114 &2876211866095677090
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,41 +140,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4abd3a54001469f44bf180f54da6fc5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxParticules: 1000
-  particuleLifeTime: 3
-  spawnRatePerSeconds: 0.02
-  initialSpeed: 0.3
-  initialUpVelocity: 0.3
-  gravity: -0.3
+  maxParticules: 100
+  particuleLifeTime: 2
+  spawnRatePerSeconds: 0.1
+  initialSpeed: 0.5
+  initialUpVelocity: 1
+  gravity: -0.98
   lossOfMomentum: 0.99
   minZ: 0.6
---- !u!1 &8113171275930122537
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6709737427120792345}
-  m_Layer: 10
-  m_Name: Front
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6709737427120792345
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8113171275930122537}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 8602698072774243049}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

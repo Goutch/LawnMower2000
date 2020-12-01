@@ -13,81 +13,64 @@ public class GameMenu : MonoBehaviour
     [SerializeField] private Button backToMenuButton = null;
     [SerializeField] private GameObject endGamePanel = null;
     [SerializeField] private GameObject pointsPanel = null;
-    [SerializeField] private GameObject statsPrefab = null;
-    [SerializeField] private Text timeText = null;
-    [SerializeField] private Text startGameText = null;
     [SerializeField] private Text playerOneScore = null;
     [SerializeField] private Text playerTwoScore = null;
     [SerializeField] private Image playerOneImage = null;
     [SerializeField] private Image playerTwoImage = null;
+
+    [SerializeField] private Text playerOnePoints = null;
+    [SerializeField] private Text playerTwoPoints = null;
+    [SerializeField] private Image playerOneColor = null;
+    [SerializeField] private Image playerTwoColor = null;
+
+    [SerializeField] private Text timeText = null;
+
     private GameManager gameManager;
-    private Options options;
     private EventSystem eventSystem;
-    private List<StatsUpdate> statsUpdates = new List<StatsUpdate>();
+
+    private void Awake()
+    {
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+    }
 
     private void Start()
     {
-        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        options = gameManager.GetComponent<Options>();
         menuPanel.SetActive(false);
         endGamePanel.SetActive(false);
-        gameManager.OnGameStart += GameManager_OnGameStart;
-        gameManager.OnGameTimeChange += GameManager_OnGameTimeChange;
-        gameManager.OnGameFinish += OnGameFinished;
         eventSystem = menuPanel.GetComponentInChildren<EventSystem>();
     }
 
-    private void GameManager_OnGameTimeChange(float time)
+    private void OnEnable()
     {
-        timeText.text = "Time:" + ((int) Mathf.Floor(time));
+        gameManager.OnGameFinish += GameManager_OnGameFinish;
     }
 
-    public void OnDisable()
+    private void OnDisable()
     {
-        gameManager.OnGameStart -= GameManager_OnGameStart;
-        gameManager.OnGameTimeChange -= GameManager_OnGameTimeChange;
-        gameManager.OnGameFinish -= OnGameFinished;
+        gameManager.OnGameFinish -= GameManager_OnGameFinish;
     }
 
-    private void GameManager_OnGameStart()
+    private void GameManager_OnGameFinish()
     {
-        foreach (StatsUpdate stats in statsUpdates)
-        {
-            Destroy(stats.gameObject);
-        }
+        endGamePanel.SetActive(true);
 
-        statsUpdates.Clear();
+        playerOneImage.color = gameManager.Player.Color;
+        playerOneScore.text = gameManager.Player.Points.ToString();
 
-        int position = 0;
-        foreach (LawnMower lawnMower in gameManager.LawnMowers)
-        {
-            StatsUpdate stats = Instantiate(statsPrefab, pointsPanel.transform).GetComponent<StatsUpdate>();
-            stats.LawnMower = lawnMower;
-            stats.Position = position++;
-            statsUpdates.Add(stats);
-        }
+        playerTwoImage.color = gameManager.AI.Color;
+        playerTwoScore.text = gameManager.AI.Points.ToString();
     }
 
     private void Update()
     {
-        if (gameManager.Player != null && !gameManager.Player.Ready)
-        {
-            startGameText.gameObject.SetActive(true);
-        }
-        else
-        {
-            startGameText.gameObject.SetActive(false);
-        }
+        timeText.text = "Time: " + gameManager.RemaningTime.ToString("F");
 
-        if (Input.GetKeyDown(options.Controls.gameMenu) || Input.GetButtonDown("Menu"))
+        if (Input.GetKeyDown(gameManager.Options.Controls.gameMenu) || Input.GetButtonDown("Menu"))
         {
             menuPanel.SetActive(!menuPanel.activeSelf);
             if (menuPanel.activeSelf)
             {
-                if (!gameManager.IsGameOnline())
-                {
-                    Time.timeScale = 0;
-                }
+                Time.timeScale = 0;
 
                 EventSystem.current = eventSystem;
                 eventSystem.SetSelectedGameObject(null);
@@ -97,44 +80,32 @@ public class GameMenu : MonoBehaviour
             {
                 Time.timeScale = 1;
             }
-
-            gameManager.SetInGameMenuState(menuPanel.activeSelf);
         }
+
+        playerOneColor.color = gameManager.Player.Color;
+        playerOnePoints.text = gameManager.Player.Points.ToString();
+
+        playerTwoColor.color = gameManager.AI.Color;
+        playerTwoPoints.text = gameManager.AI.Points.ToString();
     }
 
     public void OnBackToMenuButtonClick()
     {
-        Time.timeScale = 1;
-        gameManager.FinishGame();
-        gameManager.LoadMenu();
-        gameManager.SetInGameMenuState(false);
-    }
-
-    public void OnGameFinished()
-    {
-        if (!endGamePanel.activeSelf)
+        if(!gameManager.GameFinished)
         {
-            endGamePanel.SetActive(true);
-             
-            for (int i=0;i< gameManager.LawnMowers.Count; i++)
-            {
-                if (i == 0)
-                {
-                    playerOneImage.color = gameManager.LawnMowers[i].Color;
-                    playerOneScore.text = gameManager.LawnMowers[i].Points.ToString();
-                }
-                else
-                {
-                    playerTwoImage.color = gameManager.LawnMowers[i].Color;
-                    playerTwoScore.text = gameManager.LawnMowers[i].Points.ToString();
-                }
-            }
+            gameManager.FinishGame();
         }
+        
+        menuPanel.SetActive(false);
+        endGamePanel.SetActive(false);
+        gameManager.LoadMenu();
+
+        Time.timeScale = 1;
     }
 
     public void OnPlayAgainButtonClicked()
     {
+        gameManager.RestartGame();
         endGamePanel.SetActive(false);
-        gameManager.FinishGame();
     }
 }

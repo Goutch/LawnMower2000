@@ -2,279 +2,164 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Timers;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject mapPrefab;
-    [SerializeField] private GameObject lawnMowerPrefab;
-    [SerializeField] private GameObject gameMenuPrefab;
-    [SerializeField] private GameObject titleScreenPrefab;
-    private Options options;
-    private bool gameSceneActive = false;
-    private Map map;
-    private bool inGameMenuIsOpened = false;
-    private bool titleScreenShowed = false;
+    #region Event
+    public delegate void OnGameHandler();
 
-    public delegate void OnGameStartHandler();
+    public event OnGameHandler OnGameStart;
+    public event OnGameHandler OnGameFinish;
+    #endregion
 
-    public delegate void OnGameFinishHandler();
+    #region SerializeField
+    [SerializeField] private GameObject LoadingPanel = null;
+    [SerializeField] private Text LoadingText = null;
+    [SerializeField] private GameObject GameMenuPrefab = null;
 
-    public event OnGameStartHandler OnGameStart;
-    public event OnGameFinishHandler OnGameFinish;
+    [SerializeField] private GameObject MapPrefab = null;
+    [SerializeField] private GameObject LawnMowerPrefab = null;
 
-    public delegate void OnGameTimeChangeHandler(float time);
+    #endregion
 
-    public event OnGameTimeChangeHandler OnGameTimeChange;
-    public bool GameStarted { set; get; } = false;
-    public bool GameFinished { set; get; } = false;
-    public List<LawnMower> LawnMowers { private set; get; } = new List<LawnMower>();
+    #region Attribut
+    public Map Map { get; private set; }
+    public Options Options { get; private set; }
 
-    private float gameTime = 0f;
+    public float RemaningTime { get { float timeElapsed = Time.time - startTime;  return timeElapsed > gameDuration ? 0 : gameDuration - timeElapsed; } }
 
-    public LawnMower Player = null;
+    public LawnMower Player { get; private set; }
+    public LawnMower AI { get; private set; }
+    public bool GameStarted = false;
+    public bool GameFinished = false;
+    public bool GameInProgress { get { return GameStarted && !GameFinished; } }
+    #endregion
 
-    void Update()
+    #region private variable
+    private float startTime;
+    private float gameDuration;
+    #endregion 
+
+    #region Start Game
+
+    void StartGame()
     {
-        if (!GameStarted && !GameFinished)
-        {
-            LawnMowers = GameObject.FindGameObjectsWithTag("LawnMower").Select(x => x.GetComponent<LawnMower>()).ToList();
+        Map = Instantiate(MapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
+        Map.Init(Random.Range(0, int.MaxValue));
 
-            if (LawnMowers.Count != 0 && LawnMowers.All(l => l.Ready))
-            {
-                GameStarted = true;
-                gameTime = (((options.MapSize.x-2)*(options.MapSize.y-2))/LawnMowers.Count)-4;
-                OnGameStart?.Invoke();
-            }
+        //gameDuration = (((Options.MapSize.x - 2) * (Options.MapSize.y - 2)) / 2) - 4;
+        gameDuration = 10;
+
+        Player = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+        AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+
+        Player.Color = Options.LawnMower1Color;
+        AI.Color = Options.LawnMower2Color;
+
+        Player.gameObject.AddComponent<Player>();
+        AI.gameObject.AddComponent<AI>();
+
+        Instantiate(GameMenuPrefab);
+
+        GameStarted = true;
+        GameFinished = false;
+        OnGameStart?.Invoke();
+
+        startTime = Time.time;
+    }
+
+    void Start()
+    {
+        Options = GetComponent<Options>();
+
+        SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Additive);
+    }
+
+    public void LoadMenu()
+    {
+        SceneManager.UnloadSceneAsync("Game");
+        SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Additive);
+    }
+
+    public void LoadGame()
+    {
+        StartCoroutine(LoadGameAsynchronously());
+    }
+
+    IEnumerator LoadGameAsynchronously()
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
+        LoadingPanel.SetActive(true);
+
+        SceneManager.UnloadSceneAsync("Menu");
+        while (!operation.isDone)
+        {
+            LoadingText.text = operation.progress.ToString("P", CultureInfo.CreateSpecificCulture("en-US"));
+            yield return null;
         }
 
-        if (GameStarted)
-        {
-            gameTime -= Time.deltaTime;
-            if (gameTime < 0)
-            {
-                gameTime = 0;
-                GameStarted = false;
-                GameFinished = true;
-            }
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Game"));
 
-            OnGameTimeChange?.Invoke(gameTime);
-        }
 
-        if (GameFinished)
+        StartGame();
+
+        LoadingText.text = "Loading completed";
+        LoadingPanel.SetActive(false);
+    }
+
+    #endregion
+
+    private void Update()
+    {
+        if(RemaningTime == 0 && GameStarted && !GameFinished)
         {
-            OnGameFinish?.Invoke();
+            FinishGame();
         }
     }
 
     public void FinishGame()
     {
-        gameTime = 0;
-        if (options.GameMode == Options.GameModeType.Online)
+        OnGameFinish?.Invoke();
+        GameFinished = true;
+
+        Destroy(Player.gameObject);
+        Destroy(AI.gameObject);
+        Destroy(Map.gameObject);
+    }
+
+    public void RestartGame()
+    {
+        if (!GameFinished)
         {
-            PhotonNetwork.Destroy(Player.GetComponentInParent<PhotonView>());
-            LawnMowers.Clear();
-            map.Reset();
-
-            LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower", map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
-            Player = lawnMower1;
-
-            lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
-            lawnMower1.gameObject.AddComponent<Player>();
-
-            GameFinished = false;
+            FinishGame();
         }
 
-        if (options.GameMode == Options.GameModeType.OfflineVsAI)
-        {
-            foreach (LawnMower mower in LawnMowers)
-            {
-                Destroy(mower.gameObject);
-            }
+        Map = Instantiate(MapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
+        Map.Init(Random.Range(0, int.MaxValue));
 
-            LawnMowers.Clear();
+        Player = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+        AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 
-            map.Generate(Random.Range(0,int.MaxValue));
+        Player.Color = Options.LawnMower1Color;
+        AI.Color = Options.LawnMower2Color;
 
-            LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-            LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
+        Player.gameObject.AddComponent<Player>();
+        AI.gameObject.AddComponent<AI>();
 
-            lawnMower1.Color = options.LawnMower1Color;
-            lawnMower2.Color = options.LawnMower2Color;
-            lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
-            lawnMower2.OrientationLawnMower = LawnMower.Orientation.up;
+        GameStarted = true;
+        GameFinished = false;
+        OnGameStart?.Invoke();
 
-            lawnMower1.gameObject.AddComponent<Player>();
-            Player = lawnMower1;
-            lawnMower2.gameObject.AddComponent<AI>();
-
-            GameFinished = false;
-        }
+        startTime = Time.time;
     }
 
-    void Start()
-    {
-        options = GetComponent<Options>();
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
-        LoadMenu();
-    }
-
-    private void StartNetworkGame()
-    {
-        options.GameMode = Options.GameModeType.Online;
-
-        //Map
-        map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
-        map.Init(0);
-
-        LawnMower lawnMower1 = PhotonNetwork.Instantiate("NetworkLawnMower", map.GetSpawnPoint(), quaternion.identity).GetComponentInChildren<LawnMower>();
-        Player = lawnMower1;
-
-        lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
-        lawnMower1.gameObject.AddComponent<Player>();
-
-        Instantiate(gameMenuPrefab);
-    }
-
-    private void StartGame()
-    {
-        options.GameMode = Options.GameModeType.OfflineVsAI;
-
-        //Map
-        map = Instantiate(mapPrefab, Vector3.zero, Quaternion.identity).GetComponent<Map>();
-        map.Init(Random.Range(0,int.MaxValue));
-        
-        LawnMower lawnMower1 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-        LawnMower lawnMower2 = Instantiate(lawnMowerPrefab, map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
-
-        lawnMower1.Color = options.LawnMower1Color;
-        lawnMower2.Color = options.LawnMower2Color;
-        lawnMower1.OrientationLawnMower = LawnMower.Orientation.up;
-        lawnMower2.OrientationLawnMower = LawnMower.Orientation.up;
-
-        lawnMower1.gameObject.AddComponent<Player>();
-        Player = lawnMower1;
-        lawnMower2.gameObject.AddComponent<AI>();
-
-        Instantiate(gameMenuPrefab);
-    }
-
-    private void OnJoinedRoom(object sender)
-    {
-        NetworkManager networkManager = (NetworkManager) sender;
-        networkManager.OnJoinedRoomEvent -= OnJoinedRoom;
-        SceneManager.UnloadSceneAsync("Scenes/Loading");
-        StartNetworkGame();
-    }
-
-    public bool IsGameActive()
-    {
-        return gameSceneActive;
-    }
-
-    public void LoadOnlineGame(string roomName)
-    {
-        StartCoroutine(LoadOnlineGameAsynchronously(roomName));
-    }
-
-    public void LoadLocalGame()
-    {
-        StartCoroutine(LoadLocalGameAsynchronously());
-    }
-
-    public void LoadMenu()
-    {
-        SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Additive);
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "Game")
-        {
-            GameStarted = false;
-            GameFinished = false;
-            SceneManager.SetActiveScene(scene);
-            SceneManager.UnloadSceneAsync("Menu");
-            gameSceneActive = true;
-        }
-
-        if (scene.name == "Menu")
-        {
-            SceneManager.SetActiveScene(scene);
-            if (!titleScreenShowed)
-            {
-                titleScreenShowed = true;
-                Instantiate(titleScreenPrefab, Vector3.zero, Quaternion.identity);
-            }
-
-            if (IsGameActive())
-            {
-                SceneManager.UnloadSceneAsync("Game");
-            }
-        }
-    }
-
-    IEnumerator LoadLocalGameAsynchronously()
-    {
-        SceneManager.LoadScene("Scenes/Loading", LoadSceneMode.Additive);
-        AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
-
-        while (!operation.isDone)
-        {
-            yield return null;
-        }
-
-        StartGame(); 
-        SceneManager.UnloadSceneAsync("Scenes/Loading");
-     
-    }
-
-    IEnumerator LoadOnlineGameAsynchronously(string roomName)
-    {
-        SceneManager.LoadScene("Scenes/Loading", LoadSceneMode.Additive);
-        
-        AsyncOperation operation = SceneManager.LoadSceneAsync("Scenes/Game", LoadSceneMode.Additive);
-
-        while (!operation.isDone)
-        {
-            yield return null;
-        }
-
-        NetworkManager networkManager = new GameObject().AddComponent<NetworkManager>();
-        networkManager.name = "NetworkManager";
-        networkManager.tag = "NetworkManager";
-        Scene scene = SceneManager.GetSceneByName("Main");
-        SceneManager.MoveGameObjectToScene(networkManager.gameObject, scene);
-
-        networkManager.OnJoinedRoomEvent += OnJoinedRoom;
-        networkManager.Connect(roomName);
-
-    }
-
-    public Map GetMap()
-    {
-        return map;
-    }
-
-    public void SetInGameMenuState(bool enabled)
-    {
-        inGameMenuIsOpened = enabled;
-        Player.GetComponent<Player>().TogglePlayerInputs(enabled);
-    }
-
-    public bool IsMenuOpen()
-    {
-        return inGameMenuIsOpened;
-    }
-
-    public bool IsGameOnline()
-    {
-        return options.GameMode == Options.GameModeType.Online;
-    }
+   
 }

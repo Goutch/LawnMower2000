@@ -13,52 +13,28 @@ public class LawnMower : MonoBehaviour
         left = 3,
     }
 
+    private Vector3[] OrientationVector = { Vector2.up, Vector2.right, Vector2.down, Vector2.left };
+
+    #region Event 
     public delegate void LawnMowerNextPositionEvent(Vector2Int nextPosition, Orientation orientation);
-
     public event LawnMowerNextPositionEvent OnReachedDestination;
+    #endregion 
 
-    public delegate void LawnMowerHitWallEvent(Vector2Int position, Orientation orientation);
+    #region SerializedField
+    [SerializeField] private float Speed = 1;
 
-    public event LawnMowerHitWallEvent OnWallHit;
+    #endregion
 
-    public delegate void OnChangeNextTurnHander();
-
-    public event OnChangeNextTurnHander OnChangeNextTurn;
-
-    [SerializeField] private int nextTurn = 0;
-
-    public int NextTurn
-    {
-        get { return nextTurn; }
-        set
-        {
-            nextTurn = value;
-            if (value != 0) OnChangeNextTurn?.Invoke();
-        }
-    }
-
-    [SerializeField] private Transform front;
-    public Transform Front => front;
-
-    private Vector2Int nextTilePosition;
-    private GameManager gameManager;
-
-
-    private Map map;
-    private int points = 0;
-
-    public bool Ready { get; set; } = false;
-
+    #region private variable
     private SpriteRenderer spriteRenderer = null;
+    private GameManager gameManager = null;
 
+    private Vector3 Destination;
+    
+    #endregion
+
+    #region Attribut
     private Color color = Color.white;
-    private bool mowing = false;
-    private bool isStuck = false;
-
-    public bool IsStuck => isStuck;
-
-    public bool Mowing => mowing;
-
     public Color Color
     {
         get { return color; }
@@ -69,148 +45,116 @@ public class LawnMower : MonoBehaviour
         }
     }
 
-    public Orientation OrientationLawnMower { get; set; }
+    public int Points { get; set; }
 
-    public int NumberOfTurn { get; set; } = 0;
+    private int nextTurn = 0;
+    public int NextTurn { get { return nextTurn; } set {if (value < 0)nextTurn = 4 + (value % 4); else nextTurn = value;}}
 
-    public Vector2Int NextTilePosition
+    public Orientation OrientationLawnMower { get; set; } = 0;
+
+    public bool Mowing { set;  get; } = true;
+    public bool IsStuck { set; get; } = false;
+    #endregion Attribut
+
+    private void Awake()
     {
-        get => nextTilePosition;
-        set => nextTilePosition = value;
-    }
-
-    public int Points
-    {
-        get => points;
-        set => points = value;
-    }
-
-    void OnEnable()
-    {
-        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        gameManager.OnGameStart += OnGameStart;
-        gameManager.OnGameFinish += OnGameFinish;
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
     }
 
-    private void OnGameFinish()
+    private void OnEnable()
     {
-        mowing = false;
+        gameManager.OnGameStart += GameManager_OnGameStart;
+        gameManager.OnGameFinish += GameManager_OnGameFinish;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
-        gameManager.OnGameStart -= OnGameStart;
-        gameManager.OnGameFinish -= OnGameFinish;
+        gameManager.OnGameStart -= GameManager_OnGameStart;
+        gameManager.OnGameFinish -= GameManager_OnGameFinish;
     }
 
-    private void OnGameStart()
+
+    private void GameManager_OnGameFinish()
     {
-        map = gameManager.GetMap();
-        FindNextPosition();
+        Mowing = false;
+    }
+
+    private void GameManager_OnGameStart()
+    {
         GetPoint();
-        mowing = true;
+
+        Vector2Int currentTile = gameManager.Map.WorldToGrid(transform.position);
+        Destination = FindDestination();
         StartCoroutine(MowMapRoutine());
     }
 
     IEnumerator MowMapRoutine()
     {
-        while (mowing)
+        while (Mowing)
         {
             yield return new WaitForSeconds(0.1f);
-            map.MowMap(transform.position);
+            gameManager.Map.MowMap(transform.position);
         }
     }
 
-    void Update()
+    private void Update()
     {
-        isStuck = false;
-        transform.rotation = Quaternion.AngleAxis((int) OrientationLawnMower * -90, Vector3.forward);
-        if (mowing)
+        if(gameManager.GameInProgress)
         {
+            transform.rotation = Quaternion.AngleAxis((int)OrientationLawnMower * -90, Vector3.forward);
 
-
-            //move if does not it wall
-            Vector2Int frontPosition = map.WorldToGrid(front.transform.position);
-            if (map.GetTile(frontPosition) != Map.TileType.Rock)
+            float distance = Vector3.Distance(Destination, transform.position);
+            if (Time.deltaTime * Speed < distance)
             {
                 transform.Translate(Vector3.up * Time.deltaTime);
             }
-            //turn if hit wall and has next turn
             else
             {
-                isStuck = true;
-                if (NextTurn != 0)
+                GetPoint();
+                transform.position = Destination;
+
+                Vector3 newDestination = FindDestination();
+
+                if(Destination == newDestination)
                 {
-                    Turn();
-                    NextTurn = 0;
+                    IsStuck = true;
                 }
-                //notify wall was hit to change tragectory
                 else
                 {
-                    OnWallHit?.Invoke(map.WorldToGrid(transform.position), OrientationLawnMower);
+                    IsStuck = false;
                 }
-            }
 
-            //is in the middle of a tile
-            if (!isStuck &&
-                map.WorldToGrid(transform.position) == nextTilePosition &&
-                map.WorldToGrid(transform.position) != map.WorldToGrid(front.transform.position))
-            {
-                GetPoint();
-                Turn();
-                NextTurn = 0;
-                OnReachedDestination?.Invoke(nextTilePosition, OrientationLawnMower);
+                Destination = newDestination;
+                OnReachedDestination?.Invoke(new Vector2Int((int)Destination.x, (int)Destination.y), OrientationLawnMower);
             }
         }
+    }
+
+    private Vector3 FindDestination()
+    {
+        Vector2Int currentTile = gameManager.Map.WorldToGrid(transform.position);
+        Vector3 currentTileCenter = new Vector3(currentTile.x + 0.5f, currentTile.y + 0.5f, 0);
+
+        OrientationLawnMower = (Orientation)(((int)OrientationLawnMower + NextTurn) % 4);
+        Vector3 nextDestination = currentTileCenter + OrientationVector[(int)OrientationLawnMower];
+        NextTurn = 0;
+
+        if (gameManager.Map.GetTile(nextDestination) == Map.TileType.Rock)
+        {
+            return currentTileCenter;
+        }
+        
+        return nextDestination;
     }
 
     private void GetPoint()
     {
-        Vector2Int gridPosition = map.WorldToGrid(transform.position);
-        if (map.GetTile(gridPosition) == Map.TileType.Grass)
+        Vector2Int gridPosition = gameManager.Map.WorldToGrid(transform.position);
+        if (gameManager.Map.GetTile(gridPosition) == Map.TileType.Grass)
         {
             Points++;
-            map.SetTile(gridPosition.x, gridPosition.y, Map.TileType.Dirt);
+            gameManager.Map.SetTile(gridPosition.x, gridPosition.y, Map.TileType.Dirt);
         }
-    }
-
-    private void FindNextPosition()
-    {
-        nextTilePosition = map.WorldToGrid(transform.position);
-        switch (OrientationLawnMower)
-        {
-            case Orientation.down:
-                nextTilePosition.y -= 1;
-                break;
-            case Orientation.up:
-                nextTilePosition.y += 1;
-                break;
-            case Orientation.right:
-                nextTilePosition.x += 1;
-                break;
-            case Orientation.left:
-                nextTilePosition.x -= 1;
-                break;
-        }
-    }
-    
-    private void Turn()
-    {
-        NumberOfTurn++;
-        OrientationLawnMower = (Orientation) (((int) OrientationLawnMower + NextTurn) % 4);
-        FindNextPosition();
-    }
-
-    public int GetPoints()
-    {
-        return Points;
-    }
-
-    public void SetNextTurn(int turn)
-    {
-        if (turn < 0)
-            turn = 4 + (turn % 4);
-        NextTurn = turn;
     }
 }

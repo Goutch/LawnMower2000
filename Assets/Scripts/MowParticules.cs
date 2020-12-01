@@ -40,7 +40,7 @@ public class MowParticules : MonoBehaviour
         material = new Material(Shader.Find("Custom/ParticulesShader"));
         material.enableInstancing = true;
 
-        quad = GeometryUtils.CreateQuad(1.0f / gameManager.GetMap().PixelsPerUnits, 1.0f / gameManager.GetMap().PixelsPerUnits);
+        quad = GeometryUtils.CreateQuad(1.0f / gameManager.Map.PixelsPerUnits, 1.0f / gameManager.Map.PixelsPerUnits);
         gameManager.OnGameStart += OnGameStart;
         particules = new List<Matrix4x4>();
         velocities = new List<Vector4>();
@@ -120,14 +120,16 @@ public class MowParticules : MonoBehaviour
                 Color color;
                 if (lawnMower.IsStuck)
                 {
-                    color = gameManager.GetMap().SampleMap(lawnMower.transform.position);
+                    color = gameManager.Map.SampleMap(lawnMower.transform.position);
                 }
                 else
                 {
-                    color = gameManager.GetMap().SampleMap(
-                        new Vector3(lawnMower.Front.position.x + rnd.Next(-50, 50) / 200f,
-                            lawnMower.Front.position.y + rnd.Next(-50, 50) / 200f,
-                            lawnMower.Front.position.z));
+                    Vector3 front = lawnMower.transform.position + lawnMower.transform.up * 0.5f;
+
+                    color = gameManager.Map.SampleMap(
+                        new Vector3(front.x + rnd.Next(-50, 50) / 200f,
+                            front.y + rnd.Next(-50, 50) / 200f,
+                            front.z));
                 }
 
                 colors.Insert(0, color);

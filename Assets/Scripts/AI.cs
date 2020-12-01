@@ -4,10 +4,8 @@ using UnityEngine.Tilemaps;
 
 public class AI : MonoBehaviour
 {
-    private LawnMower lawnMower;
-    private GameManager gameManager;
-    private Map map;
-    private Options options;
+    private LawnMower lawnMower = null;
+    private GameManager gameManager = null;
 
     class Node
     {
@@ -23,29 +21,26 @@ public class AI : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    private void Awake()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        options = gameManager.GetComponent<Options>();
-        map = gameManager.GetMap();
         lawnMower = GetComponent<LawnMower>();
+    }
+
+    private void OnEnable()
+    {
         lawnMower.OnReachedDestination += OnReachedDestination;
-        lawnMower.OnWallHit += OnHitWall;
-        lawnMower.Ready = true;
+    }
+    private void OnDisable()
+    {
+        lawnMower.OnReachedDestination -= OnReachedDestination;
     }
 
     private void OnReachedDestination(Vector2Int position, LawnMower.Orientation orientation)
     {
         int next = FindNextMove(position, orientation);
-        lawnMower.SetNextTurn(next);
+        lawnMower.NextTurn = next;
     }
-
-    private void OnHitWall(Vector2Int position, LawnMower.Orientation orientation)
-    {
-        int next = FindNextMove(position, orientation);
-        lawnMower.SetNextTurn(next);
-    }
-
 
     private int FindNextMove(Vector2Int position, LawnMower.Orientation orientation)
     {
@@ -58,7 +53,7 @@ public class AI : MonoBehaviour
         {
             current = open.Dequeue();
             closed.Add(current.position);
-            if (current.position != position && map.GetTile(current.position) == Map.TileType.Grass)
+            if (current.position != position && gameManager.Map.GetTile(current.position) == Map.TileType.Grass)
             {
                 destination = current;
                 break;
@@ -92,12 +87,12 @@ public class AI : MonoBehaviour
                     break;
             }
 
-            if (map.ContainPosition(front) && map.GetTile(front) != Map.TileType.Rock && !closed.Contains(front))
+            if (gameManager.Map.ContainPosition(front) && gameManager.Map.GetTile(front) != Map.TileType.Rock && !closed.Contains(front))
                 open.Enqueue(new Node(front, current, orientation));
-            if (map.ContainPosition(right) && map.GetTile(right) != Map.TileType.Rock && !closed.Contains(right))
-                open.Enqueue(new Node(right, current, (LawnMower.Orientation) (((int) orientation + 1) % 4)));
-            if (map.ContainPosition(left) && map.GetTile(left) != Map.TileType.Rock && !closed.Contains(left))
-                open.Enqueue(new Node(left, current, (LawnMower.Orientation) (((int) orientation + 3) % 4)));
+            if (gameManager.Map.ContainPosition(right) && gameManager.Map.GetTile(right) != Map.TileType.Rock && !closed.Contains(right))
+                open.Enqueue(new Node(right, current, (LawnMower.Orientation)(((int)orientation + 1) % 4)));
+            if (gameManager.Map.ContainPosition(left) && gameManager.Map.GetTile(left) != Map.TileType.Rock && !closed.Contains(left))
+                open.Enqueue(new Node(left, current, (LawnMower.Orientation)(((int)orientation + 3) % 4)));
         }
 
         if (destination != null)

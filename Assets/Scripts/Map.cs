@@ -53,7 +53,7 @@ public class Map : MonoBehaviour
         sizeY = options.MapSize.y;
         grid = GetComponent<Grid>();
 
-        Camera.main.transform.position = new Vector3(sizeX / 2f, sizeY / 2f, -1);
+        Camera.main.transform.position = new Vector3(sizeX / 2f, sizeY / 2f, -10);
         Camera.main.orthographicSize = options.MapSize.y / 2f;
         quad = GeometryUtils.CreateQuad(sizeX, sizeY, false);
 
@@ -79,7 +79,6 @@ public class Map : MonoBehaviour
         this.seed = seed;
 
         Random.InitState(seed);
-        Random.InitState((new System.Random()).Next());
 
         dirtTexture = new Texture2D(sizeX * pixelsPerUnits, sizeY * pixelsPerUnits, TextureFormat.RGBA32, false);
         grassTexture = new Texture2D(sizeX * pixelsPerUnits, sizeY * pixelsPerUnits, TextureFormat.RGBA32, false);

@@ -5,14 +5,31 @@ public class MainMenu : MonoBehaviour
 {
     [SerializeField] private GameObject MainMenuPanel = null;
     [SerializeField] private GameObject OptionsMenuPanel = null;
+    [SerializeField] private GameObject AvatarSelectionMenu = null;
+    [SerializeField] private AvatarSelectionMenu AvatarSelectionSCript = null;
 
     private GameManager gameManager;
     private Options options;
 
-    void Start()
+    public void Start()
     {
-        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        options = gameManager.GetComponent<Options>();
+        AvatarSelectionSCript.OnStartEvent += MainMenu_OnStartEvent;
+    }
+
+    public void Destroy()
+    {
+        AvatarSelectionSCript.OnStartEvent -= MainMenu_OnStartEvent;
+    }
+
+    private void MainMenu_OnStartEvent()
+    {
+        OnStartGameButtonClick();
+    }
+
+    public void OnPlayButtonClick()
+    {
+        MainMenuPanel.SetActive(false);
+        AvatarSelectionMenu.SetActive(true);
     }
 
     public void OnLocalButtonClick()
@@ -36,5 +53,12 @@ public class MainMenu : MonoBehaviour
     {
         OptionsMenuPanel.SetActive(false);
         MainMenuPanel.SetActive(true);
+    }
+
+    private void OnStartGameButtonClick()
+    {
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        options = gameManager.GetComponent<Options>();
+        gameManager.LoadGame();
     }
 }

@@ -10,6 +10,10 @@ public class AvatarSelectionMenu : MonoBehaviour
     [SerializeField] private Image PreviewTexture = null;
     [SerializeField] private ChooseSprite BaseSpriteChosen = null;
     [SerializeField] private ChooseSprite EngineSpriteChosen = null;
+    [SerializeField] private Color PrimaryColorBaseReferent = Color.white;
+    [SerializeField] private Color SecondaryColorBaseReferent = Color.white;
+    [SerializeField] private Color PrimaryColorEnginReferent = Color.white;
+    [SerializeField] private Color SecondaryColorEnginReferent = Color.white;
 
     public delegate void OnStartHandler();
     public event OnStartHandler OnStartEvent;
@@ -22,20 +26,22 @@ public class AvatarSelectionMenu : MonoBehaviour
 
     private void Awake()
     {
-        BaseSpriteChosen.OnSpriteChangedEvent += SpriteChosen_OnSpriteChangedEvent;
-        EngineSpriteChosen.OnSpriteChangedEvent += SpriteChosen_OnSpriteChangedEvent;
+        BaseSpriteChosen.OnSpriteChangedEvent += CreateTexture;
+        EngineSpriteChosen.OnSpriteChangedEvent += CreateTexture;
+
+        BaseSpriteChosen.OnColorChangedEvent += CreateTexture;
+        EngineSpriteChosen.OnColorChangedEvent += CreateTexture;
     }
 
     private void OnDestroy()
     {
-        BaseSpriteChosen.OnSpriteChangedEvent -= SpriteChosen_OnSpriteChangedEvent;
-        EngineSpriteChosen.OnSpriteChangedEvent -= SpriteChosen_OnSpriteChangedEvent;
+        BaseSpriteChosen.OnSpriteChangedEvent -= CreateTexture;
+        EngineSpriteChosen.OnSpriteChangedEvent -= CreateTexture;
+
+        BaseSpriteChosen.OnColorChangedEvent -= CreateTexture;
+        EngineSpriteChosen.OnColorChangedEvent -= CreateTexture;
     }
 
-    private void SpriteChosen_OnSpriteChangedEvent()
-    {
-        CreateTexture();
-    }
 
     private void CreateTexture()
     {
@@ -47,9 +53,43 @@ public class AvatarSelectionMenu : MonoBehaviour
 
         Color[] pixelsResult = new Color[pixelsBase.Length];
 
-        for(int i = 0; i < pixelsBase.Length; ++i)
+        Color basePrimaryColor = BaseSpriteChosen.GetPrimaryColor();
+        Color baseSecondaryColor = BaseSpriteChosen.GetSecondaryColor();
+        Color enginPrimaryColor = EngineSpriteChosen.GetPrimaryColor();
+        Color enginSecondaryColor = EngineSpriteChosen.GetSecondaryColor();
+
+        for (int i = 0; i < pixelsBase.Length; ++i)
         {
-            pixelsResult[i] = pixelEngine[i].a != 0 ? pixelEngine[i] : pixelsBase[i];
+            if (pixelEngine[i].a != 0)
+            {
+                if(pixelEngine[i] == PrimaryColorEnginReferent)
+                {
+                    pixelsResult[i] = enginPrimaryColor;
+                }
+                else if(pixelEngine[i] == SecondaryColorEnginReferent)
+                {
+                    pixelsResult[i] = enginSecondaryColor;
+                }
+                else
+                {
+                    pixelsResult[i] = pixelEngine[i];
+                }
+            }
+            else
+            {
+                if (pixelsBase[i] == PrimaryColorBaseReferent)
+                {
+                    pixelsResult[i] = basePrimaryColor;
+                }
+                else if (pixelsBase[i] == SecondaryColorBaseReferent)
+                {
+                    pixelsResult[i] = baseSecondaryColor;
+                }
+                else
+                {
+                    pixelsResult[i] = pixelsBase[i];
+                }
+            }
         }
 
         Texture2D texture = new Texture2D(textureWidth, textureHeight, TextureFormat.ARGB32, false);

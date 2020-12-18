@@ -45,7 +45,7 @@ public class ChooseSprite : MonoBehaviour
         }
     }
 
-    private void ChangeImage(int index)
+    public void ChangeImage(int index)
     {
         if(index == 0)
         {

@@ -6,19 +6,19 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject MainMenuPanel = null;
     [SerializeField] private GameObject OptionsMenuPanel = null;
     [SerializeField] private GameObject AvatarSelectionMenu = null;
-    [SerializeField] private AvatarSelectionMenu AvatarSelectionSCript = null;
+    [SerializeField] private AvatarSelectionMenu AvatarSelectionScript = null;
 
     private GameManager gameManager;
     private Options options;
 
     public void Start()
     {
-        AvatarSelectionSCript.OnStartEvent += MainMenu_OnStartEvent;
+        AvatarSelectionScript.OnStartEvent += MainMenu_OnStartEvent;
     }
 
     public void Destroy()
     {
-        AvatarSelectionSCript.OnStartEvent -= MainMenu_OnStartEvent;
+        AvatarSelectionScript.OnStartEvent -= MainMenu_OnStartEvent;
     }
 
     private void MainMenu_OnStartEvent()

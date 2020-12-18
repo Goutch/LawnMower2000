@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     public bool GameStarted = false;
     public bool GameFinished = false;
     public bool GameInProgress { get { return GameStarted && !GameFinished; } }
+    public Sprite PlayerSprite = null;
     #endregion
 
     #region private variable
@@ -61,6 +62,11 @@ public class GameManager : MonoBehaviour
         AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 
         Player.Color = Options.LawnMower1Color;
+        if (PlayerSprite != null)
+        {
+            Player.GetComponentInChildren<SpriteRenderer>().sprite = PlayerSprite;
+        }
+
         AI.Color = Options.LawnMower2Color;
 
         Player.gameObject.AddComponent<Player>();

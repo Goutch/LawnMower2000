@@ -14,6 +14,7 @@ public class AvatarSelectionMenu : MonoBehaviour
     [SerializeField] private Color SecondaryColorBaseReferent = Color.white;
     [SerializeField] private Color PrimaryColorEnginReferent = Color.white;
     [SerializeField] private Color SecondaryColorEnginReferent = Color.white;
+    [SerializeField] private Button PresetButton = null;
 
     public delegate void OnStartHandler();
     public event OnStartHandler OnStartEvent;
@@ -31,6 +32,11 @@ public class AvatarSelectionMenu : MonoBehaviour
 
         BaseSpriteChosen.OnColorChangedEvent += CreateTexture;
         EngineSpriteChosen.OnColorChangedEvent += CreateTexture;
+    }
+
+    private void OnEnable()
+    {
+        PresetButton.onClick?.Invoke();
     }
 
     private void OnDestroy()
@@ -97,9 +103,11 @@ public class AvatarSelectionMenu : MonoBehaviour
 
         texture.Apply();
 
-        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), Vector2.zero, 16);
+        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), new Vector2(0.5f,0.5f), 16);
         sprite.texture.filterMode = FilterMode.Point;
         PreviewTexture.sprite = sprite;
+
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().PlayerSprite = sprite;
     }
 
     public void OnStartButtonClick()

@@ -39,7 +39,7 @@ public class LawnMower : MonoBehaviour
         set
         {
             color = value;
-            spriteRenderer.color = value;
+            //spriteRenderer.color = value;
         }
     }
 

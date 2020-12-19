@@ -238,7 +238,7 @@ MonoBehaviour:
   warningSound: {fileID: 8300000, guid: 7288b8d256e5c6344b850b8b68ca1e64, type: 3}
   victorySound: {fileID: 8300000, guid: e882e1a92975f4343ad900912503340f, type: 3}
   menuMusic: {fileID: 8300000, guid: 7a97f44694b01924281f3a7b186bb837, type: 3}
-  backgroundMusic: {fileID: 0}
+  backgroundMusic: {fileID: 8300000, guid: 2b7894e43438aa3458adf8ba928f089f, type: 3}
   GameStarted: 0
   GameFinished: 0
   menuMusicIsPlaying: 0

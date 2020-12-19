@@ -101,7 +101,7 @@
       <workItem from="1606233815754" duration="14839000" />
       <workItem from="1606315839735" duration="20564000" />
       <workItem from="1606843746584" duration="11145000" />
-      <workItem from="1608403868042" duration="11708000" />
+      <workItem from="1608403868042" duration="12200000" />
     </task>
     <servers />
   </component>
@@ -202,32 +202,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/Scripts/GameManager.cs</url>
-          <line>227</line>
-          <properties documentPath="D:\GitHub\LawnMower2000\Assets\Scripts\GameManager.cs" initialLine="204">
-            <startOffsets>
-              <option value="7087" />
-            </startOffsets>
-            <endOffsets>
-              <option value="7122" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/Scripts/GameManager.cs</url>
-          <line>223</line>
-          <properties documentPath="D:\GitHub\LawnMower2000\Assets\Scripts\GameManager.cs" initialLine="200">
-            <startOffsets>
-              <option value="6931" />
-            </startOffsets>
-            <endOffsets>
-              <option value="6957" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/GameManager.cs</url>
           <line>159</line>

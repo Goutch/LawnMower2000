@@ -14,8 +14,8 @@ public class Options : MonoBehaviour
 
     public KeyBinding Controls { private set; get; }
     public GameModeType GameMode { set; get; } = GameModeType.OfflineVsAI;
-    public Color LawnMower1Color { private set; get; } = Color.blue;
-    public Color LawnMower2Color { private set; get; } = Color.red;
+    public Color LawnMower1Color  = Color.blue;
+    public Color LawnMower2Color  = Color.red;
     public Vector2Int MapSize { private set; get; } = new Vector2Int(16, 16);
 
 

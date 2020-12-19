@@ -101,8 +101,8 @@ public class AvatarSelectionMenu : MonoBehaviour
         PreviewTexture.sprite = sprite;
 
         GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().PlayerSprite = sprite;
-       // GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().Player.Color = basePrimaryColor;
-        //GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().AI.Color = Color.white;
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().Options.LawnMower1Color = basePrimaryColor;
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().Options.LawnMower2Color = Color.white;
     }
 
     public void OnStartButtonClick()

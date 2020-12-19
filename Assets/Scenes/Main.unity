@@ -237,8 +237,12 @@ MonoBehaviour:
   LawnMowerPrefab: {fileID: 3165817870513948915, guid: c0028ec9a67185f42a75ae1ed3fbc816, type: 3}
   warningSound: {fileID: 8300000, guid: 7288b8d256e5c6344b850b8b68ca1e64, type: 3}
   victorySound: {fileID: 8300000, guid: e882e1a92975f4343ad900912503340f, type: 3}
+  menuMusic: {fileID: 8300000, guid: 7a97f44694b01924281f3a7b186bb837, type: 3}
+  backgroundMusic: {fileID: 0}
   GameStarted: 0
   GameFinished: 0
+  menuMusicIsPlaying: 0
+  PlayerSprite: {fileID: 0}
 --- !u!114 &875841315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +255,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a77d87484cc6fc24b957a0380c1e7f35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LawnMower1Color: {r: 0, g: 0, b: 1, a: 1}
+  LawnMower2Color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!4 &875841316
 Transform:
   m_ObjectHideFlags: 0

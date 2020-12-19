@@ -38,6 +38,7 @@
     <setting file="file://C:/Program Files/Unity/Hub/Editor/2020.1.10f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/EventSystem.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Unity/Hub/Editor/2020.1.10f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/InputModules/StandaloneInputModule.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://C:/Program Files/Unity/Hub/Editor/2020.1.10f1/Editor/Data/Resources/PackageManager/BuiltInPackages/com.unity.ugui/Runtime/EventSystem/InputModules/BaseInput.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/05250243-5982-472D-92DA-7F939C7F8164/f3/bd8bf15a/GameObject.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -45,11 +46,11 @@
         <option value="$PROJECT_DIR$/Assets/Scripts/LawnMower.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Player.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/NewInputModule.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Options.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/MainMenu.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/GameMenu.cs" />
         <option value="$PROJECT_DIR$/Assets/AvatarSelectionMenu.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Options.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/GameManager.cs" />
       </list>
     </option>
   </component>
@@ -100,7 +101,7 @@
       <workItem from="1606233815754" duration="14839000" />
       <workItem from="1606315839735" duration="20564000" />
       <workItem from="1606843746584" duration="11145000" />
-      <workItem from="1608403868042" duration="8917000" />
+      <workItem from="1608403868042" duration="11708000" />
     </task>
     <servers />
   </component>
@@ -203,39 +204,39 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/GameManager.cs</url>
-          <line>213</line>
+          <line>227</line>
           <properties documentPath="D:\GitHub\LawnMower2000\Assets\Scripts\GameManager.cs" initialLine="204">
             <startOffsets>
-              <option value="6535" />
+              <option value="7087" />
             </startOffsets>
             <endOffsets>
-              <option value="6570" />
+              <option value="7122" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/GameManager.cs</url>
-          <line>209</line>
+          <line>223</line>
           <properties documentPath="D:\GitHub\LawnMower2000\Assets\Scripts\GameManager.cs" initialLine="200">
             <startOffsets>
-              <option value="6379" />
+              <option value="6931" />
             </startOffsets>
             <endOffsets>
-              <option value="6405" />
+              <option value="6957" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/GameManager.cs</url>
-          <line>148</line>
+          <line>159</line>
           <properties documentPath="D:\GitHub\LawnMower2000\Assets\Scripts\GameManager.cs" initialLine="147">
             <startOffsets>
-              <option value="4779" />
+              <option value="5218" />
             </startOffsets>
             <endOffsets>
-              <option value="4799" />
+              <option value="5238" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="14" />
@@ -248,33 +249,20 @@
               <option value="3825" />
             </startOffsets>
             <endOffsets>
-              <option value="3933" />
+              <option value="3944" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/AvatarSelectionMenu.cs</url>
-          <line>102</line>
-          <properties documentPath="D:\GitHub\LawnMower2000\Assets\AvatarSelectionMenu.cs" initialLine="102">
-            <startOffsets>
-              <option value="3718" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3816" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/AvatarSelectionMenu.cs</url>
           <line>104</line>
           <properties documentPath="D:\GitHub\LawnMower2000\Assets\AvatarSelectionMenu.cs" initialLine="104">
             <startOffsets>
-              <option value="3942" />
+              <option value="3953" />
             </startOffsets>
             <endOffsets>
-              <option value="4041" />
+              <option value="4067" />
             </endOffsets>
           </properties>
           <option name="timeStamp" value="17" />

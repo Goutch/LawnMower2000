@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject LawnMowerPrefab = null;
     [SerializeField] private AudioClip warningSound = null;
     [SerializeField] private AudioClip victorySound = null;
+    [SerializeField] private AudioClip menuMusic = null;
+    [SerializeField] private AudioClip backgroundMusic = null;
 
     #endregion
 
@@ -37,6 +39,7 @@ public class GameManager : MonoBehaviour
     public LawnMower AI { get; private set; }
     public bool GameStarted = false;
     public bool GameFinished = false;
+    public bool menuMusicIsPlaying = false;
     public bool GameInProgress { get { return GameStarted && !GameFinished; } }
     public Sprite PlayerSprite = null;
     #endregion
@@ -79,7 +82,9 @@ public class GameManager : MonoBehaviour
         OnGameStart?.Invoke();
 
         startTime = Time.time;
+        mainAudioSource.clip = backgroundMusic;
         mainAudioSource.Play();
+        menuMusicIsPlaying = false;
     }
 
     void Start()
@@ -126,6 +131,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (!GameStarted && !menuMusicIsPlaying && !effectsSource.isPlaying)
+        {
+            StartCoroutine(startMenuMusic());
+            menuMusicIsPlaying = true;
+        }
+        
         if(RemaningTime == 0 && GameStarted && !GameFinished)
         {
             FinishGame();
@@ -157,6 +168,7 @@ public class GameManager : MonoBehaviour
         StopAllCoroutines();
         OnGameFinish?.Invoke();
         GameFinished = true;
+        GameStarted = false;
         if (RemaningTime <= 0)
         {
             effectsSource.Play();
@@ -193,7 +205,9 @@ public class GameManager : MonoBehaviour
         OnGameStart?.Invoke();
         startTime = Time.time;
         effectsSource.Stop();
+        mainAudioSource.clip = backgroundMusic;
         mainAudioSource.Play();
+        menuMusicIsPlaying = false;
         warningPlayed = false;
         mainSourceIsFading = false;
     }
@@ -211,6 +225,19 @@ public class GameManager : MonoBehaviour
         while (RemaningTime > 0f || mainAudioSource.volume >0)
         {
             mainAudioSource.volume -= 0.2f;
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    IEnumerator startMenuMusic()
+    {
+        mainAudioSource.pitch = 1f;
+        mainAudioSource.volume = 0f;
+        mainAudioSource.clip = menuMusic;
+        mainAudioSource.Play();
+        while (mainAudioSource.volume != 1f)
+        {
+            mainAudioSource.volume += 0.2f;
             yield return new WaitForSeconds(1);
         }
     }

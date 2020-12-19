@@ -17,7 +17,8 @@ public class GameMenu : MonoBehaviour
     [SerializeField] private Text playerTwoScore = null;
     [SerializeField] private Image playerOneImage = null;
     [SerializeField] private Image playerTwoImage = null;
-
+    [SerializeField] private GameObject playerOneVictoryImage = null;
+    [SerializeField] private GameObject playerTwoVictoryImage = null;
     [SerializeField] private Text playerOnePoints = null;
     [SerializeField] private Text playerTwoPoints = null;
     [SerializeField] private Image playerOneColor = null;
@@ -61,12 +62,28 @@ public class GameMenu : MonoBehaviour
     private void GameManager_OnGameFinish()
     {
         endGamePanel.SetActive(true);
+        playerOneVictoryImage.SetActive(false);
+        playerTwoVictoryImage.SetActive(false);
 
         playerOneImage.color = gameManager.Player.Color;
         playerOneScore.text = gameManager.Player.Points.ToString();
 
         playerTwoImage.color = gameManager.AI.Color;
         playerTwoScore.text = gameManager.AI.Points.ToString();
+
+        if (gameManager.Player.Points > gameManager.AI.Points)
+        {
+            playerOneVictoryImage.SetActive(true);
+        }
+        else if(gameManager.Player.Points < gameManager.AI.Points)
+        {
+            playerTwoVictoryImage.SetActive(true);
+        }
+        else
+        {
+            playerOneVictoryImage.SetActive(true);
+            playerTwoVictoryImage.SetActive(true);
+        }
     }
 
     private void Update()

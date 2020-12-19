@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class AvatarSelectionMenu : MonoBehaviour
 {
-    [SerializeField] private GameObject MainMenuPanel = null;
     [SerializeField] private GameObject AvatarSelectionMenuPanel = null;
     [SerializeField] private Image PreviewTexture = null;
     [SerializeField] private ChooseSprite BaseSpriteChosen = null;
@@ -18,12 +17,6 @@ public class AvatarSelectionMenu : MonoBehaviour
 
     public delegate void OnStartHandler();
     public event OnStartHandler OnStartEvent;
-
-    public void OnBackButtonClick()
-    {
-        MainMenuPanel.SetActive(true);
-        AvatarSelectionMenuPanel.SetActive(false);
-    }
 
     private void Awake()
     {

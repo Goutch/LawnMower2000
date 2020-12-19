@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
             mainAudioSource.pitch = 1f;
             mainAudioSource.volume = 1f;
         }
-        else if (RemaningTime <= 20f && !warningPlayed&& GameStarted)
+        else if (RemaningTime <= 20f && !warningPlayed&& GameStarted && !GameFinished)
         {
             OnWarning?.Invoke();
             effectsSource.clip = warningSound;
@@ -144,7 +144,7 @@ public class GameManager : MonoBehaviour
             StartCoroutine(warningCoroutine());
             warningPlayed = true;
         }
-        else if(RemaningTime <=3f && !mainSourceIsFading && GameStarted)
+        else if(RemaningTime <=3f && !mainSourceIsFading && GameStarted &&!GameFinished)
         {
             StartCoroutine(fadeOutMainAudio());
         }
@@ -157,8 +157,11 @@ public class GameManager : MonoBehaviour
         StopAllCoroutines();
         OnGameFinish?.Invoke();
         GameFinished = true;
-        effectsSource.Play();
-        
+        if (RemaningTime <= 0)
+        {
+            effectsSource.Play();
+        }
+
         Destroy(Player.gameObject);
         Destroy(AI.gameObject);
     }

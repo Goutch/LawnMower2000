@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
+public struct SpritesArray
+{
+    [SerializeField] public Sprite[] SpritesIdle;
+    [SerializeField] public Sprite[] SpritesGotPoints;
+}
+
 public class ChooseSprite : MonoBehaviour
 {
-    [SerializeField] private Sprite[] Sprites;
+    [SerializeField] public SpritesArray[] Sprites;
     [SerializeField] private Image Image = null;
     [SerializeField] private Text Text = null;
     [SerializeField] private Button Previousbutton = null;
@@ -18,13 +25,21 @@ public class ChooseSprite : MonoBehaviour
     public delegate void OnColorChangedHandler();
     public event OnColorChangedHandler OnColorChangedEvent;
 
-    private int currentIndex = 0;
+    public int currentIndex = 0;
     private int currentPrimaryColor = 0;
     private int currentSecondaryColor = 0;
 
-    public Sprite GetChosenSprite()
+    public SpritesArray GetCurrentSprite()
     {
         return Sprites[currentIndex];
+    }
+
+    public Sprite GetChosenSprite(int indexAnim, int animIndex)
+    {
+        if (animIndex == 0)
+            return Sprites[currentIndex].SpritesIdle[indexAnim];
+        else
+            return Sprites[currentIndex].SpritesGotPoints[indexAnim];
     }
 
     public Color GetPrimaryColor()
@@ -65,8 +80,8 @@ public class ChooseSprite : MonoBehaviour
             NextButton.interactable = true;
         }
 
-        Text.text = Sprites[index].name;
-        Image.sprite = Sprites[index];
+        Text.text = Sprites[index].SpritesIdle[0].name;
+        Image.sprite = Sprites[index].SpritesIdle[0];
         currentIndex = index;
 
         OnSpriteChangedEvent?.Invoke();

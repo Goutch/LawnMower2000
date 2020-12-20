@@ -20,11 +20,11 @@ public class AvatarSelectionMenu : MonoBehaviour
 
     private void Awake()
     {
-        BaseSpriteChosen.OnSpriteChangedEvent += CreateTexture;
-        EngineSpriteChosen.OnSpriteChangedEvent += CreateTexture;
+        BaseSpriteChosen.OnSpriteChangedEvent += CreateTextures;
+        EngineSpriteChosen.OnSpriteChangedEvent += CreateTextures;
 
-        BaseSpriteChosen.OnColorChangedEvent += CreateTexture;
-        EngineSpriteChosen.OnColorChangedEvent += CreateTexture;
+        BaseSpriteChosen.OnColorChangedEvent += CreateTextures;
+        EngineSpriteChosen.OnColorChangedEvent += CreateTextures;
     }
 
     private void OnEnable()
@@ -34,21 +34,20 @@ public class AvatarSelectionMenu : MonoBehaviour
 
     private void OnDestroy()
     {
-        BaseSpriteChosen.OnSpriteChangedEvent -= CreateTexture;
-        EngineSpriteChosen.OnSpriteChangedEvent -= CreateTexture;
+        BaseSpriteChosen.OnSpriteChangedEvent -= CreateTextures;
+        EngineSpriteChosen.OnSpriteChangedEvent -= CreateTextures;
 
-        BaseSpriteChosen.OnColorChangedEvent -= CreateTexture;
-        EngineSpriteChosen.OnColorChangedEvent -= CreateTexture;
+        BaseSpriteChosen.OnColorChangedEvent -= CreateTextures;
+        EngineSpriteChosen.OnColorChangedEvent -= CreateTextures;
     }
 
-
-    private void CreateTexture()
+    private Sprite CreateTexture(int indexBase, int indexEngine, int animIndex)
     {
-        int textureWidth = BaseSpriteChosen.GetChosenSprite().texture.width;
-        int textureHeight = BaseSpriteChosen.GetChosenSprite().texture.height;
+        int textureWidth = BaseSpriteChosen.GetChosenSprite(indexBase, 0).texture.width;
+        int textureHeight = BaseSpriteChosen.GetChosenSprite(indexBase, 0).texture.height;
 
-        Color[] pixelsBase = BaseSpriteChosen.GetChosenSprite().texture.GetPixels();
-        Color[] pixelEngine = EngineSpriteChosen.GetChosenSprite().texture.GetPixels();
+        Color[] pixelsBase = BaseSpriteChosen.GetChosenSprite(indexBase, 0).texture.GetPixels();
+        Color[] pixelEngine = EngineSpriteChosen.GetChosenSprite(indexEngine, animIndex).texture.GetPixels();
 
         Color[] pixelsResult = new Color[pixelsBase.Length];
 
@@ -98,11 +97,32 @@ public class AvatarSelectionMenu : MonoBehaviour
 
         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, textureWidth, textureHeight), new Vector2(0.5f,0.5f), 16);
         sprite.texture.filterMode = FilterMode.Point;
-        PreviewTexture.sprite = sprite;
+       
 
-        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().PlayerSprite = sprite;
-        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().Options.LawnMower1Color = basePrimaryColor;
+        return sprite;
+    }
+
+    public void CreateTextures()
+    {
+        Sprite[] Idles = new Sprite[6];
+        for (int i = 0; i < 6; ++i)
+        {
+            Idles[i] = CreateTexture(0,i,0);
+        }
+
+        Sprite[] GotPoints = new Sprite[4];
+        for (int i = 0; i < 4; ++i)
+        {
+            GotPoints[i] = CreateTexture(0, i, 1);
+        }
+
+        PreviewTexture.sprite = Idles[0];
+
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().Options.LawnMower1Color = BaseSpriteChosen.GetPrimaryColor();
         GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().Options.LawnMower2Color = Color.white;
+
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().PlayerSpriteIdle = Idles;
+        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().PlayerGotPoints = GotPoints;
     }
 
     public void OnStartButtonClick()

@@ -1916,8 +1916,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Sprites:
-  - {fileID: 21300000, guid: 3458a5ae0f3ce3f428f39553f9e7528b, type: 3}
-  - {fileID: 21300000, guid: 2ca8b10a3aed93745b6ac9ab75c24ffb, type: 3}
+  - SpritesIdle:
+    - {fileID: 21300000, guid: 55363c0e08498c3428f14ff4768655b7, type: 3}
+    SpritesGotPoints: []
+  - SpritesIdle:
+    - {fileID: 21300000, guid: 17a417089ec575140be33e88516eec6f, type: 3}
+    SpritesGotPoints: []
   Image: {fileID: 1402303516}
   Text: {fileID: 2126845447}
   Previousbutton: {fileID: 1809232758}
@@ -1928,6 +1932,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 1, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
+  currentIndex: 0
 --- !u!1 &579309058
 GameObject:
   m_ObjectHideFlags: 0
@@ -7550,8 +7555,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Sprites:
-  - {fileID: 21300000, guid: af7d73334dcf58e438c77a397cf68869, type: 3}
-  - {fileID: 21300000, guid: 65dde9c7d37dfeb4c88a3087b1fb4314, type: 3}
+  - SpritesIdle:
+    - {fileID: 21300000, guid: c7601e43ab4dc7c488cb9d1fb8519b9d, type: 3}
+    - {fileID: 21300000, guid: 86a83e3d65a1a2745a54302958262bdc, type: 3}
+    - {fileID: 21300000, guid: ec6cee79c86bb004b9a705018cdce219, type: 3}
+    - {fileID: 21300000, guid: 184c69189f38a0641bf3356cabe0b1f5, type: 3}
+    - {fileID: 21300000, guid: 74f90457fab648a40b4c24fa3d2a7904, type: 3}
+    - {fileID: 21300000, guid: edd5d8bfb09fd67409c08240471b9be5, type: 3}
+    SpritesGotPoints:
+    - {fileID: 21300000, guid: 89d952b2639f2624b954957f938e373c, type: 3}
+    - {fileID: 21300000, guid: 9528b7ccc864a3f40946a89e2a586986, type: 3}
+    - {fileID: 21300000, guid: 7a4e12d000490554ab291cb4ad49f8a7, type: 3}
+    - {fileID: 21300000, guid: aabb79459106e284faab9f648a9751e7, type: 3}
+  - SpritesIdle:
+    - {fileID: 21300000, guid: 2869ec64562001d43bb627aca0e8a037, type: 3}
+    - {fileID: 21300000, guid: 234f53811eaf46742866814d1d57f399, type: 3}
+    - {fileID: 21300000, guid: a1ec803393b1a414cb9b8624968660b6, type: 3}
+    - {fileID: 21300000, guid: 24e4635666382e245b9159adc203b8f4, type: 3}
+    - {fileID: 21300000, guid: 5f17600296885ec4d909239f57537c82, type: 3}
+    - {fileID: 21300000, guid: d8fb7a71b0c17da48a28b0be0916e599, type: 3}
+    SpritesGotPoints:
+    - {fileID: 21300000, guid: b2219a8281bcd7747a7b76b21fe55abc, type: 3}
+    - {fileID: 21300000, guid: 3968a8ad30aa06d4682ab3bee8796b9c, type: 3}
+    - {fileID: 21300000, guid: 2fd0aaf9b60735543a1667a9df8c7096, type: 3}
+    - {fileID: 21300000, guid: 20f918922e6b12f4f849674d7cebfb70, type: 3}
   Image: {fileID: 1253051049}
   Text: {fileID: 1667409192}
   Previousbutton: {fileID: 477619091}
@@ -7562,6 +7589,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 1, a: 1}
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
+  currentIndex: 0
 --- !u!1 &2126845445
 GameObject:
   m_ObjectHideFlags: 0

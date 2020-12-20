@@ -52,6 +52,13 @@ public class LawnMower : MonoBehaviour
 
     public bool Mowing { private set;  get; } = false;
     public bool IsStuck { set; get; } = false;
+
+    public Sprite[] Idle = null;
+    public Sprite[] GotPoints = null;
+
+    private float currentIndexAnim = 0;
+    private bool animPlayingGotPoints = false;
+    private float timeGotPointsStarted = 0;
     #endregion Attribut
 
     private void Awake()
@@ -98,6 +105,26 @@ public class LawnMower : MonoBehaviour
 
     private void Update()
     {
+        if (Idle.Length > 0)
+        {
+            if(animPlayingGotPoints && Time.time - timeGotPointsStarted > 0.4f)
+            {
+                animPlayingGotPoints = false;
+                currentIndexAnim = 0;
+            }
+
+            if(animPlayingGotPoints)
+            {
+                currentIndexAnim = (currentIndexAnim + Time.deltaTime * 8) % GotPoints.Length;
+                spriteRenderer.sprite = GotPoints[(int)(currentIndexAnim)];
+            }
+            else
+            {
+                currentIndexAnim = (currentIndexAnim + Time.deltaTime * 8) % Idle.Length;
+                spriteRenderer.sprite = Idle[(int)(currentIndexAnim)];
+            }
+        }
+
         if(gameManager.GameInProgress)
         {
             transform.rotation = Quaternion.AngleAxis((int)OrientationLawnMower * -90, Vector3.forward);
@@ -152,6 +179,9 @@ public class LawnMower : MonoBehaviour
         if (gameManager.Map.GetTile(gridPosition) == Map.TileType.Grass)
         {
             Points++;
+            animPlayingGotPoints = true;
+            timeGotPointsStarted = Time.time;
+
             gameManager.Map.SetTile(gridPosition.x, gridPosition.y, Map.TileType.Dirt);
         }
     }

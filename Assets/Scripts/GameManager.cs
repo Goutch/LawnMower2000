@@ -42,7 +42,8 @@ public class GameManager : MonoBehaviour
     public bool GameFinished = false;
     public bool menuMusicIsPlaying = false;
     public bool GameInProgress { get { return GameStarted && !GameFinished; } }
-    public Sprite PlayerSprite = null;
+    public Sprite[] PlayerSpriteIdle = null;
+    public Sprite[] PlayerGotPoints = null;
     #endregion
 
     #region private variable
@@ -66,10 +67,8 @@ public class GameManager : MonoBehaviour
         AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 
         Player.Color = Options.LawnMower1Color;
-        if (PlayerSprite != null)
-        {
-            Player.GetComponentInChildren<SpriteRenderer>().sprite = PlayerSprite;
-        }
+        Player.GetComponent<LawnMower>().Idle = PlayerSpriteIdle;
+        Player.GetComponent<LawnMower>().GotPoints = PlayerGotPoints;
 
         AI.Color = Options.LawnMower2Color;
 
@@ -198,10 +197,9 @@ public class GameManager : MonoBehaviour
         AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
 
         Player.Color = Options.LawnMower1Color;
-        if (PlayerSprite != null)
-        {
-            Player.GetComponentInChildren<SpriteRenderer>().sprite = PlayerSprite;
-        }
+        Player.GetComponent<LawnMower>().Idle = PlayerSpriteIdle;
+        Player.GetComponent<LawnMower>().GotPoints = PlayerGotPoints;
+
         AI.Color = Options.LawnMower2Color;
 
         Player.gameObject.AddComponent<Player>();

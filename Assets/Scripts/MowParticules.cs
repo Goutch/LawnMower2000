@@ -11,10 +11,10 @@ public class MowParticules : MonoBehaviour
     [SerializeField] private int maxParticules = 1000;
     [SerializeField] float particuleLifeTime = 2;
     [SerializeField] private float spawnRatePerSeconds = 0.1f;
-    [SerializeField] private float initialSpeed = 0.5f;
-    [SerializeField] private float initialUpVelocity = 1.0f;
+    [SerializeField] private float initialSpeed = 0.7f;
+    [SerializeField] private float initialUpVelocity = 0.7f;
     [SerializeField] private float gravity = -.98f;
-    [SerializeField] private float lossOfMomentum = 0.99f;
+    [SerializeField] private float lossOfMomentum = 1.4f;
     [SerializeField] private float minZ = 0.6f;
     [SerializeField] private float spread = 3;
     private Material material;
@@ -73,8 +73,8 @@ public class MowParticules : MonoBehaviour
 
             if (particules[i].m23 < minZ)
             {
-                velocities[i].x *= lossOfMomentum;
-                velocities[i].y *= lossOfMomentum;
+                velocities[i].x *=1-(lossOfMomentum*Time.deltaTime);
+                velocities[i].y *=1-(lossOfMomentum*Time.deltaTime);
                 velocities[i].z -= (gravity * Time.deltaTime);
                 Vector4 newPosition = new Vector4(
                     particules[i].m03 + (velocities[i].x * Time.deltaTime),

@@ -1,6 +1,9 @@
+*.idea*
+
 # =============== #
 # Unity generated #
 # =============== #
+
 [Tt]emp/
 [Oo]bj/
 [Bb]uild

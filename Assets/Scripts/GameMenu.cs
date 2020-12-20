@@ -25,9 +25,9 @@ public class GameMenu : MonoBehaviour
     [SerializeField] private Image playerTwoColor = null;
     [SerializeField] private GameObject warningText = null;
     [SerializeField] private Text timeText = null;
-
+    [SerializeField] private EventSystem eventSystem = null;
     private GameManager gameManager;
-    private EventSystem eventSystem;
+
 
     private void Awake()
     {
@@ -38,7 +38,6 @@ public class GameMenu : MonoBehaviour
     {
         menuPanel.SetActive(false);
         endGamePanel.SetActive(false);
-        eventSystem = menuPanel.GetComponentInChildren<EventSystem>();
         warningText.SetActive(false);
     }
 
@@ -75,7 +74,7 @@ public class GameMenu : MonoBehaviour
         {
             playerOneVictoryImage.SetActive(true);
         }
-        else if(gameManager.Player.Points < gameManager.AI.Points)
+        else if (gameManager.Player.Points < gameManager.AI.Points)
         {
             playerTwoVictoryImage.SetActive(true);
         }
@@ -97,8 +96,6 @@ public class GameMenu : MonoBehaviour
             {
                 Time.timeScale = 0;
                 gameManager.PauseMusic();
-                EventSystem.current = eventSystem;
-                eventSystem.SetSelectedGameObject(null);
                 eventSystem.SetSelectedGameObject(backToMenuButton.gameObject);
             }
             else
@@ -117,11 +114,11 @@ public class GameMenu : MonoBehaviour
 
     public void OnBackToMenuButtonClick()
     {
-        if(!gameManager.GameFinished)
+        if (!gameManager.GameFinished)
         {
             gameManager.FinishGame();
         }
-        
+
         menuPanel.SetActive(false);
         endGamePanel.SetActive(false);
         gameManager.LoadMenu();

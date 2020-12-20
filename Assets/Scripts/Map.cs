@@ -120,14 +120,6 @@ public class Map : MonoBehaviour
         return seed;
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButton(0))
-        {
-            MowMap(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        }
-    }
-
     public void MowMap(Vector3 position)
     {
         position *= pixelsPerUnits;

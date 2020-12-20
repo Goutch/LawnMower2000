@@ -129,6 +129,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 1
   engineNoise: {fileID: 8300000, guid: 3ea6e0fe7a3a48d40be86faebec31050, type: 3}
+  Idle: []
+  GotPoints: []
 --- !u!114 &2876211866095677090
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,9 +146,9 @@ MonoBehaviour:
   maxParticules: 500
   particuleLifeTime: 5
   spawnRatePerSeconds: 0.01
-  initialSpeed: 0.5
+  initialSpeed: 0.2
   initialUpVelocity: 0.3
   gravity: -0.98
-  lossOfMomentum: 0.99
+  lossOfMomentum: 2
   minZ: 0.6
   spread: 3

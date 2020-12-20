@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 1
+  engineNoise: {fileID: 8300000, guid: 3ea6e0fe7a3a48d40be86faebec31050, type: 3}
 --- !u!114 &2876211866095677090
 MonoBehaviour:
   m_ObjectHideFlags: 0

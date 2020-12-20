@@ -29,6 +29,7 @@ public class Options : MonoBehaviour
 
     public float musicVolume { private set; get; }
     public float effectsVolume { private set; get; }
+    public float lawnMowerVolume { private set; get; }
 
 
     private Dictionary<string, KeyCode> temporaryBindings = new Dictionary<string, KeyCode>();
@@ -54,9 +55,11 @@ public class Options : MonoBehaviour
     {
         VolumeLevels.SoundFX = temporaryVolumeLevels["E"];
         VolumeLevels.Music = temporaryVolumeLevels["M"];
+        VolumeLevels.LawnMower = temporaryVolumeLevels["L"];
         WriteVolumeSettings();
         musicVolume = temporaryVolumeLevels["M"];
         effectsVolume = temporaryVolumeLevels["E"];
+        lawnMowerVolume = temporaryVolumeLevels["L"];
         volumeChanged?.Invoke();
     }
 
@@ -126,8 +129,10 @@ public class Options : MonoBehaviour
 
         temporaryVolumeLevels["E"] = VolumeLevels.SoundFX;
         temporaryVolumeLevels["M"] = VolumeLevels.Music;
+        temporaryVolumeLevels["L"] = VolumeLevels.LawnMower;
         musicVolume = temporaryVolumeLevels["M"];
         effectsVolume = temporaryVolumeLevels["E"];
+        lawnMowerVolume = temporaryVolumeLevels["L"];
         volumeChanged?.Invoke();
     }
 
@@ -146,6 +151,7 @@ public class Options : MonoBehaviour
         VolumeLevels = new VolumeSettings();
         temporaryVolumeLevels["E"] = VolumeLevels.SoundFX;
         temporaryVolumeLevels["M"] = VolumeLevels.Music;
+        temporaryVolumeLevels["L"] = VolumeLevels.LawnMower;
     }
 
     public KeyCode getKeyBinding(string key)

@@ -86,6 +86,10 @@ public class GameManager : MonoBehaviour
         mainAudioSource.clip = backgroundMusic;
         mainAudioSource.Play();
         menuMusicIsPlaying = false;
+        Player.engineAudioSource.volume = Options.lawnMowerVolume;
+        Player.engineAudioSource.Play();
+        AI.engineAudioSource.volume = Options.lawnMowerVolume;
+        AI.engineAudioSource.Play();
     }
 
     void Start()
@@ -170,6 +174,8 @@ public class GameManager : MonoBehaviour
 
     public void FinishGame()
     {
+        Player.engineAudioSource.Stop();
+        AI.engineAudioSource.Stop();
         effectsSource.clip = victorySound;
         mainAudioSource.Stop();
         StopAllCoroutines();
@@ -217,6 +223,10 @@ public class GameManager : MonoBehaviour
         menuMusicIsPlaying = false;
         warningPlayed = false;
         mainSourceIsFading = false;
+        Player.engineAudioSource.volume = Options.lawnMowerVolume;
+        Player.engineAudioSource.Play();
+        AI.engineAudioSource.volume = Options.lawnMowerVolume;
+        AI.engineAudioSource.Play();
     }
 
     IEnumerator warningCoroutine()
@@ -256,11 +266,30 @@ public class GameManager : MonoBehaviour
         if (mainAudioSource.isPlaying && GameStarted)
         {
             mainAudioSource.Pause();
+            if (Player.engineAudioSource.isPlaying)
+            {
+                Player.engineAudioSource.Pause();
+            }
+
+            if (AI.engineAudioSource.isPlaying)
+            {
+                AI.engineAudioSource.Pause();
+            }
+
+            if (effectsSource.isPlaying)
+            {
+                effectsSource.Pause();
+            }
+
         }
         else if(GameStarted)
         {
             mainAudioSource.Play();
+            Player.engineAudioSource.Play();
+            AI.engineAudioSource.Play();
+            effectsSource.UnPause();
         }
+        
     }
 
     private void AdjustVolume()

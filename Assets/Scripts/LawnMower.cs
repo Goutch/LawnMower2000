@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class LawnMower : MonoBehaviour
@@ -20,6 +21,7 @@ public class LawnMower : MonoBehaviour
 
     #region SerializedField
     [SerializeField] private float Speed = 1;
+    [SerializeField] private AudioClip engineNoise =null;
 
     #endregion
 
@@ -52,12 +54,22 @@ public class LawnMower : MonoBehaviour
 
     public bool Mowing { private set;  get; } = false;
     public bool IsStuck { set; get; } = false;
+
+    public AudioSource engineAudioSource { private set; get; }
+
     #endregion Attribut
+
+    private void Start()
+    {
+        
+    }
 
     private void Awake()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        engineAudioSource = gameObject.AddComponent<AudioSource>();
+        engineAudioSource.clip = engineNoise;
     }
 
     private void OnEnable()

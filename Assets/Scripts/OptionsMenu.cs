@@ -19,6 +19,8 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] private Button ApplyButton;
     [SerializeField] private Slider SFXVolumeSlider;
     [SerializeField] private Slider MusicVolumeSlider;
+    [SerializeField] private Slider LawnMowerVolumeSlider;
+    [SerializeField] private Slider EnvironmentVolumeSlider;
 
     private GameManager gameManager;
     private Options options;
@@ -64,6 +66,14 @@ public class OptionsMenu : MonoBehaviour
         else if (key == "M")
         {
             options.SetVolumeLevel(key,MusicVolumeSlider.value);
+        }
+        else if (key == "L")
+        {
+            options.SetVolumeLevel(key,LawnMowerVolumeSlider.value);
+        }
+        else if (key == "X")
+        {
+            options.SetVolumeLevel(key,EnvironmentVolumeSlider.value);
         }
     }
 
@@ -164,6 +174,8 @@ public class OptionsMenu : MonoBehaviour
     {
         SFXVolumeSlider.value = options.effectsVolume;
         MusicVolumeSlider.value = options.musicVolume;
+        LawnMowerVolumeSlider.value = options.lawnMowerVolume;
+        EnvironmentVolumeSlider.value = options.environmentVolume;
     }
 
     private void OnEnable()

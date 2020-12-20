@@ -27,6 +27,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioClip victorySound = null;
     [SerializeField] private AudioClip menuMusic = null;
     [SerializeField] private AudioClip backgroundMusic = null;
+    [SerializeField] private AudioClip secondBackgroundMusic = null;
+    [SerializeField] private AudioClip birdOne = null;
+    [SerializeField] private AudioClip birdTwo = null;
+    [SerializeField] private AudioClip dog = null;
 
     #endregion
 
@@ -52,7 +56,10 @@ public class GameManager : MonoBehaviour
     private bool warningPlayed;
     private bool mainSourceIsFading;
     private AudioSource mainAudioSource;
+    private AudioSource menuAudioSource;
     private AudioSource effectsSource;
+    private AudioSource environmentSource;
+    private AudioClip[] environmentSounds;
     #endregion 
 
     #region Start Game
@@ -61,7 +68,7 @@ public class GameManager : MonoBehaviour
     {
         Map.Generate(Random.Range(0, int.MaxValue));
         //gameDuration = (((Options.MapSize.x - 2) * (Options.MapSize.y - 2)) / 2) - 4;
-        gameDuration = 30;
+        gameDuration = 40;
         
         Player = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
         AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
@@ -82,16 +89,25 @@ public class GameManager : MonoBehaviour
         OnGameStart?.Invoke();
 
         startTime = Time.time;
-        mainAudioSource.clip = backgroundMusic;
-        mainAudioSource.Play();
-        menuMusicIsPlaying = false;
+       // mainAudioSource.clip = backgroundMusic;
+        //mainAudioSource.Play();
+        Player.engineAudioSource.volume = Options.lawnMowerVolume;
+        Player.engineAudioSource.Play();
+        AI.engineAudioSource.volume = Options.lawnMowerVolume;
+        AI.engineAudioSource.Play();
+        StartCoroutine(playEnvironmentalSounds());
     }
 
     void Start()
     {
+        environmentSounds = new AudioClip[]{birdOne,birdTwo,dog};
         Options = GetComponent<Options>();
         mainAudioSource = GetComponentInParent<AudioSource>();
+        menuAudioSource = gameObject.AddComponent<AudioSource>();
+        menuAudioSource.loop = true;
         effectsSource = gameObject.AddComponent<AudioSource>();
+        environmentSource = gameObject.AddComponent<AudioSource>();
+        environmentSource.volume = Options.environmentVolume;
         warningPlayed = false;
         mainSourceIsFading = false;
         SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Additive);
@@ -112,6 +128,7 @@ public class GameManager : MonoBehaviour
     public void LoadGame()
     {
         StartCoroutine(LoadGameAsynchronously());
+        StartCoroutine(fadeOutMenuAudio());
     }
 
     IEnumerator LoadGameAsynchronously()
@@ -137,10 +154,10 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        
         if (!GameStarted && !menuMusicIsPlaying && !effectsSource.isPlaying)
         {
             StartCoroutine(startMenuMusic());
-            menuMusicIsPlaying = true;
         }
         
         if(RemaningTime == 0 && GameStarted && !GameFinished)
@@ -163,12 +180,14 @@ public class GameManager : MonoBehaviour
         }
         else if(RemaningTime <=3f && !mainSourceIsFading && GameStarted &&!GameFinished)
         {
-            StartCoroutine(fadeOutMainAudio());
+            StartCoroutine(fadeOutMainAudioEndGame());
         }
     }
 
     public void FinishGame()
     {
+        Player.engineAudioSource.Stop();
+        AI.engineAudioSource.Stop();
         effectsSource.clip = victorySound;
         mainAudioSource.Stop();
         StopAllCoroutines();
@@ -210,11 +229,14 @@ public class GameManager : MonoBehaviour
         OnGameStart?.Invoke();
         startTime = Time.time;
         effectsSource.Stop();
-        mainAudioSource.clip = backgroundMusic;
-        mainAudioSource.Play();
-        menuMusicIsPlaying = false;
         warningPlayed = false;
         mainSourceIsFading = false;
+        StartCoroutine(fadeOutMenuAudio());
+        Player.engineAudioSource.volume = Options.lawnMowerVolume;
+        Player.engineAudioSource.Play();
+        AI.engineAudioSource.volume = Options.lawnMowerVolume;
+        AI.engineAudioSource.Play();
+        StartCoroutine(playEnvironmentalSounds());
     }
 
     IEnumerator warningCoroutine()
@@ -224,7 +246,7 @@ public class GameManager : MonoBehaviour
         mainAudioSource.pitch = 1.2f;
     }
 
-    IEnumerator fadeOutMainAudio()
+    IEnumerator fadeOutMainAudioEndGame()
     {
         mainSourceIsFading = true;
         while (RemaningTime > 0f || mainAudioSource.volume >0)
@@ -232,39 +254,122 @@ public class GameManager : MonoBehaviour
             mainAudioSource.volume -= Convert.ToSingle(0.2*mainAudioSource.volume);
             yield return new WaitForSeconds(1);
         }
+        mainAudioSource.Stop();
+    }
+
+    IEnumerator fadeOutMenuAudio()
+    {
+        StartCoroutine(fadeInMainAudioSource());
+        while (menuAudioSource.volume > 0)
+        {
+            menuAudioSource.volume -= 0.15f;
+            yield return new WaitForSeconds(0.5f);
+        }
+        menuAudioSource.Stop();
+        menuMusicIsPlaying = false;
+    }
+
+    IEnumerator fadeInMainAudioSource()
+    {
+        int rnd = Random.Range(0, 2);
+
+        if (rnd == 0)
+        {
+            mainAudioSource.clip = backgroundMusic;
+        }
+        else
+        {
+            mainAudioSource.clip = secondBackgroundMusic;
+        }
+
+        if (!mainAudioSource.isPlaying)
+        {
+            mainAudioSource.Play();
+        }
+        mainAudioSource.volume = 0;
+        while (mainAudioSource.volume < Options.musicVolume)
+        {
+            mainAudioSource.volume += Convert.ToSingle(0.3 * Options.musicVolume);
+            yield return new WaitForSeconds(1);
+        }
+
+        if (mainAudioSource.volume > Options.musicVolume)
+        {
+            mainAudioSource.volume = Options.musicVolume;
+        }
     }
 
     IEnumerator startMenuMusic()
     {
-        mainAudioSource.pitch = 1f;
-        mainAudioSource.volume = 0f;
-        mainAudioSource.clip = menuMusic;
-        mainAudioSource.Play();
-        while (mainAudioSource.volume < Options.musicVolume)
+        menuMusicIsPlaying = true;
+        mainAudioSource.Stop();
+        menuAudioSource.volume = 0f;
+        menuAudioSource.clip = menuMusic;
+        menuAudioSource.Play();
+        while (menuAudioSource.volume < Options.musicVolume)
         {
-            mainAudioSource.volume += 0.2f;
+            menuAudioSource.volume += 0.2f;
             yield return new WaitForSeconds(1);
         }
 
-        mainAudioSource.volume = Options.musicVolume;
+        menuAudioSource.volume = Options.musicVolume;
     }
+
+    IEnumerator playEnvironmentalSounds()
+    {
+        while (GameStarted && !GameFinished)
+        {
+            int rnd = Random.Range(0, environmentSounds.Length);
+            yield return new WaitForSeconds(8);
+            environmentSource.clip = environmentSounds[rnd];
+            environmentSource.Play();
+        }
+    }
+
 
     public void PauseMusic()
     {
         if (mainAudioSource.isPlaying && GameStarted)
         {
             mainAudioSource.Pause();
+            if (Player.engineAudioSource.isPlaying)
+            {
+                Player.engineAudioSource.Pause();
+            }
+
+            if (AI.engineAudioSource.isPlaying)
+            {
+                AI.engineAudioSource.Pause();
+            }
+
+            if (effectsSource.isPlaying)
+            {
+                effectsSource.Pause();
+            }
+
+            if (environmentSource.isPlaying)
+            {
+                environmentSource.Pause();
+            }
+
         }
         else if(GameStarted)
         {
             mainAudioSource.Play();
+            Player.engineAudioSource.Play();
+            AI.engineAudioSource.Play();
+            effectsSource.UnPause();
+            environmentSource.UnPause();
         }
+        
     }
 
     private void AdjustVolume()
     {
         mainAudioSource.volume = Options.musicVolume;
         effectsSource.volume = Options.effectsVolume;
+        environmentSource.volume = Options.environmentVolume;
+        menuAudioSource.volume = Options.musicVolume;
     }
 
 }

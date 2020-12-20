@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioClip victorySound = null;
     [SerializeField] private AudioClip menuMusic = null;
     [SerializeField] private AudioClip backgroundMusic = null;
+    [SerializeField] private AudioClip birdOne = null;
+    [SerializeField] private AudioClip birdTwo = null;
+    [SerializeField] private AudioClip dog = null;
 
     #endregion
 
@@ -52,6 +55,8 @@ public class GameManager : MonoBehaviour
     private bool mainSourceIsFading;
     private AudioSource mainAudioSource;
     private AudioSource effectsSource;
+    private AudioSource environmentSource;
+    private AudioClip[] environmentSounds;
     #endregion 
 
     #region Start Game
@@ -90,13 +95,17 @@ public class GameManager : MonoBehaviour
         Player.engineAudioSource.Play();
         AI.engineAudioSource.volume = Options.lawnMowerVolume;
         AI.engineAudioSource.Play();
+        StartCoroutine(playEnvironmentalSounds());
     }
 
     void Start()
     {
+        environmentSounds = new AudioClip[]{birdOne,birdTwo,dog};
         Options = GetComponent<Options>();
         mainAudioSource = GetComponentInParent<AudioSource>();
         effectsSource = gameObject.AddComponent<AudioSource>();
+        environmentSource = gameObject.AddComponent<AudioSource>();
+        environmentSource.volume = Options.environmentVolume;
         warningPlayed = false;
         mainSourceIsFading = false;
         SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Additive);
@@ -227,6 +236,7 @@ public class GameManager : MonoBehaviour
         Player.engineAudioSource.Play();
         AI.engineAudioSource.volume = Options.lawnMowerVolume;
         AI.engineAudioSource.Play();
+        StartCoroutine(playEnvironmentalSounds());
     }
 
     IEnumerator warningCoroutine()
@@ -261,6 +271,18 @@ public class GameManager : MonoBehaviour
         mainAudioSource.volume = Options.musicVolume;
     }
 
+    IEnumerator playEnvironmentalSounds()
+    {
+        while (GameStarted && !GameFinished)
+        {
+            int rnd = Random.Range(0, environmentSounds.Length);
+            yield return new WaitForSeconds(8);
+            environmentSource.clip = environmentSounds[rnd];
+            environmentSource.Play();
+        }
+    }
+
+
     public void PauseMusic()
     {
         if (mainAudioSource.isPlaying && GameStarted)
@@ -281,6 +303,11 @@ public class GameManager : MonoBehaviour
                 effectsSource.Pause();
             }
 
+            if (environmentSource.isPlaying)
+            {
+                environmentSource.Pause();
+            }
+
         }
         else if(GameStarted)
         {
@@ -288,6 +315,7 @@ public class GameManager : MonoBehaviour
             Player.engineAudioSource.Play();
             AI.engineAudioSource.Play();
             effectsSource.UnPause();
+            environmentSource.UnPause();
         }
         
     }
@@ -296,6 +324,7 @@ public class GameManager : MonoBehaviour
     {
         mainAudioSource.volume = Options.musicVolume;
         effectsSource.volume = Options.effectsVolume;
+        environmentSource.volume = Options.environmentVolume;
     }
 
 }

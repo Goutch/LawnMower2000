@@ -239,6 +239,9 @@ MonoBehaviour:
   victorySound: {fileID: 8300000, guid: e882e1a92975f4343ad900912503340f, type: 3}
   menuMusic: {fileID: 8300000, guid: 7a97f44694b01924281f3a7b186bb837, type: 3}
   backgroundMusic: {fileID: 8300000, guid: 2b7894e43438aa3458adf8ba928f089f, type: 3}
+  birdOne: {fileID: 8300000, guid: 566869d5223d640468abd6f0f3384d41, type: 3}
+  birdTwo: {fileID: 8300000, guid: 58ed3fff5bc31a143831bd46233358b9, type: 3}
+  dog: {fileID: 8300000, guid: ad82388a4ee5a9d4498be85bbe3f8b8f, type: 3}
   GameStarted: 0
   GameFinished: 0
   menuMusicIsPlaying: 0

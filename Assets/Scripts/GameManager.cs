@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     private float gameDuration;
     private bool warningPlayed;
     private bool mainSourceIsFading;
+    private bool menuMusicIsFadingOut;
     private AudioSource mainAudioSource;
     private AudioSource menuAudioSource;
     private AudioSource effectsSource;
@@ -89,8 +90,6 @@ public class GameManager : MonoBehaviour
         OnGameStart?.Invoke();
 
         startTime = Time.time;
-       // mainAudioSource.clip = backgroundMusic;
-        //mainAudioSource.Play();
         Player.engineAudioSource.volume = Options.lawnMowerVolume;
         Player.engineAudioSource.Play();
         AI.engineAudioSource.volume = Options.lawnMowerVolume;
@@ -100,6 +99,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        menuMusicIsFadingOut = false;
         environmentSounds = new AudioClip[]{birdOne,birdTwo,dog};
         Options = GetComponent<Options>();
         mainAudioSource = GetComponentInParent<AudioSource>();
@@ -259,14 +259,25 @@ public class GameManager : MonoBehaviour
 
     IEnumerator fadeOutMenuAudio()
     {
+        menuMusicIsFadingOut = true;
         StartCoroutine(fadeInMainAudioSource());
         while (menuAudioSource.volume > 0)
         {
-            menuAudioSource.volume -= 0.15f;
+            
+            if (menuAudioSource.volume < 0.15)
+            {
+                menuAudioSource.volume = 0;
+            }
+            else
+            {
+                menuAudioSource.volume -= 0.15f;
+            }
+            
             yield return new WaitForSeconds(0.5f);
         }
         menuAudioSource.Stop();
         menuMusicIsPlaying = false;
+        menuMusicIsFadingOut = false;
     }
 
     IEnumerator fadeInMainAudioSource()
@@ -301,15 +312,15 @@ public class GameManager : MonoBehaviour
 
     IEnumerator startMenuMusic()
     {
-        menuMusicIsPlaying = true;
         mainAudioSource.Stop();
         menuAudioSource.volume = 0f;
         menuAudioSource.clip = menuMusic;
+        menuMusicIsPlaying = true;
         menuAudioSource.Play();
-        while (menuAudioSource.volume < Options.musicVolume)
+        while (menuAudioSource.volume < Options.musicVolume && !menuMusicIsFadingOut)
         {
             menuAudioSource.volume += 0.2f;
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.7f);
         }
 
         menuAudioSource.volume = Options.musicVolume;

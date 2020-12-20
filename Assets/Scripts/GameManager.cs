@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioClip victorySound = null;
     [SerializeField] private AudioClip menuMusic = null;
     [SerializeField] private AudioClip backgroundMusic = null;
+    [SerializeField] private AudioClip secondBackgroundMusic = null;
     [SerializeField] private AudioClip birdOne = null;
     [SerializeField] private AudioClip birdTwo = null;
     [SerializeField] private AudioClip dog = null;
@@ -66,7 +67,7 @@ public class GameManager : MonoBehaviour
     {
         Map.Generate(Random.Range(0, int.MaxValue));
         //gameDuration = (((Options.MapSize.x - 2) * (Options.MapSize.y - 2)) / 2) - 4;
-        gameDuration = 30;
+        gameDuration = 40;
         
         Player = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
         AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
@@ -89,9 +90,8 @@ public class GameManager : MonoBehaviour
         OnGameStart?.Invoke();
 
         startTime = Time.time;
-        mainAudioSource.clip = backgroundMusic;
-        mainAudioSource.Play();
-        menuMusicIsPlaying = false;
+       // mainAudioSource.clip = backgroundMusic;
+        //mainAudioSource.Play();
         Player.engineAudioSource.volume = Options.lawnMowerVolume;
         Player.engineAudioSource.Play();
         AI.engineAudioSource.volume = Options.lawnMowerVolume;
@@ -273,6 +273,17 @@ public class GameManager : MonoBehaviour
 
     IEnumerator fadeInMainAudioSource()
     {
+        int rnd = Random.Range(0, 2);
+
+        if (rnd == 0)
+        {
+            mainAudioSource.clip = backgroundMusic;
+        }
+        else
+        {
+            mainAudioSource.clip = secondBackgroundMusic;
+        }
+
         if (!mainAudioSource.isPlaying)
         {
             mainAudioSource.Play();

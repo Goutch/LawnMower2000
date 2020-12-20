@@ -17,6 +17,8 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] private Text ContinueKeyText;
     [SerializeField] private Text StartKeyText;
     [SerializeField] private Button ApplyButton;
+    [SerializeField] private Slider SFXVolumeSlider;
+    [SerializeField] private Slider MusicVolumeSlider;
 
     private GameManager gameManager;
     private Options options;
@@ -36,18 +38,33 @@ public class OptionsMenu : MonoBehaviour
         keyBindingText = new Hashtable();
         waitingForKey = false;
         InitKeyBindingText();
+        SetAllVolumeSliders();
     }
 
     public void OnApplyButtonClicked()
     {
         options.ApplyKeyBindings();
+        options.ApplyVolumeSettings();
         keyBindingChanged = false;
     }
 
     public void OnDefaultButtonClicked()
     {
         options.SetDefaultKeyBindings();
+        options.SetDefaultVolumeSettings();
         SetAllKeysBindingText();
+    }
+
+    public void SetVolume(string key)
+    {
+        if (key == "E")
+        {
+            options.SetVolumeLevel(key,SFXVolumeSlider.value);
+        }
+        else if (key == "M")
+        {
+            options.SetVolumeLevel(key,MusicVolumeSlider.value);
+        }
     }
 
     private void SetKeyBinding(string key, KeyCode keyCode)
@@ -143,12 +160,20 @@ public class OptionsMenu : MonoBehaviour
         }
     }
 
+    private void SetAllVolumeSliders()
+    {
+        SFXVolumeSlider.value = options.effectsVolume;
+        MusicVolumeSlider.value = options.musicVolume;
+    }
+
     private void OnEnable()
     {
         if (options != null)
         {
             options.ReadKeyBindings();
+            options.ReadVolumeSettings();
             SetAllKeysBindingText();
+            SetAllVolumeSliders();
         }
     }
     

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Globalization;
 using Unity.Mathematics;
 using UnityEngine;
@@ -95,6 +96,12 @@ public class GameManager : MonoBehaviour
         warningPlayed = false;
         mainSourceIsFading = false;
         SceneManager.LoadScene("Scenes/Menu", LoadSceneMode.Additive);
+        Options.volumeChanged += AdjustVolume;
+    }
+
+    private void OnDestroy()
+    {
+        Options.volumeChanged -= AdjustVolume;
     }
 
     public void LoadMenu()
@@ -144,14 +151,14 @@ public class GameManager : MonoBehaviour
         else if(RemaningTime >20f)
         {
             mainAudioSource.pitch = 1f;
-            mainAudioSource.volume = 1f;
+            mainAudioSource.volume = Options.musicVolume;
         }
         else if (RemaningTime <= 20f && !warningPlayed&& GameStarted && !GameFinished)
         {
             OnWarning?.Invoke();
             effectsSource.clip = warningSound;
             effectsSource.pitch = 0.8f;
-            effectsSource.volume = 0.4f;
+            effectsSource.volume = Options.effectsVolume;
             StartCoroutine(warningCoroutine());
             warningPlayed = true;
         }
@@ -224,7 +231,7 @@ public class GameManager : MonoBehaviour
         mainSourceIsFading = true;
         while (RemaningTime > 0f || mainAudioSource.volume >0)
         {
-            mainAudioSource.volume -= 0.2f;
+            mainAudioSource.volume -= Convert.ToSingle(0.2*mainAudioSource.volume);
             yield return new WaitForSeconds(1);
         }
     }
@@ -235,11 +242,13 @@ public class GameManager : MonoBehaviour
         mainAudioSource.volume = 0f;
         mainAudioSource.clip = menuMusic;
         mainAudioSource.Play();
-        while (mainAudioSource.volume != 1f)
+        while (mainAudioSource.volume < Options.musicVolume)
         {
             mainAudioSource.volume += 0.2f;
             yield return new WaitForSeconds(1);
         }
+
+        mainAudioSource.volume = Options.musicVolume;
     }
 
     public void PauseMusic()
@@ -252,6 +261,12 @@ public class GameManager : MonoBehaviour
         {
             mainAudioSource.Play();
         }
+    }
+
+    private void AdjustVolume()
+    {
+        mainAudioSource.volume = Options.musicVolume;
+        effectsSource.volume = Options.effectsVolume;
     }
 
 }

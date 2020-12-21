@@ -17,8 +17,8 @@ public class MowParticules : MonoBehaviour
     [SerializeField] private float lossOfMomentum = 1.4f;
     [SerializeField] private float minZ = 0.6f;
     [SerializeField] private float spread = 3;
-    [SerializeField] private Shader particulesShader;
-    private Material material;
+    [SerializeField] private Material particulesMaterial;
+
     private LawnMower lawnMower;
     private Mesh quad;
     private Matrix4x4[] particules;
@@ -35,10 +35,6 @@ public class MowParticules : MonoBehaviour
         rnd = new Random();
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         lawnMower = GetComponent<LawnMower>();
-
-        material = new Material(particulesShader);
-        material.enableInstancing = true;
-
         quad = GeometryUtils.CreateQuad(1.0f / gameManager.Map.PixelsPerUnits, 1.0f / gameManager.Map.PixelsPerUnits);
         gameManager.OnGameStart += OnGameStart;
         particules = new Matrix4x4[maxParticules];
@@ -90,7 +86,7 @@ public class MowParticules : MonoBehaviour
         {
             colorsProperty = new MaterialPropertyBlock();
             colorsProperty.SetVectorArray("_Colors", colors);
-            Graphics.DrawMeshInstanced(quad, 0, material, particules, currentParticulesCount, colorsProperty);
+            Graphics.DrawMeshInstanced(quad, 0, particulesMaterial, particules, currentParticulesCount, colorsProperty);
         }
     }
 

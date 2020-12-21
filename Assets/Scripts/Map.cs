@@ -15,14 +15,14 @@ public class Map : MonoBehaviour
     }
 
     [SerializeField] private ComputeShader maskCompute;
+    [SerializeField] private Shader mapShader;
     [SerializeField] private Color32 grassColor1 = new Color32(255, 255, 255, 255);
     [SerializeField] private Color32 grassColor2 = new Color32(255, 255, 255, 255);
     [SerializeField] private Color32 rockColor = new Color32(255, 255, 255, 255);
     [SerializeField] private Color32 dirtColor = new Color32(255, 255, 255, 255);
     [SerializeField] private FilterMode filerMode;
     [SerializeField] private int pixelsPerUnits = 16;
-    [SerializeField] private Shader mapShader;
-
+    
     public int PixelsPerUnits => pixelsPerUnits;
 
     private TileType[,] map;

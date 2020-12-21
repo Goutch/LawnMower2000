@@ -21,7 +21,7 @@ public class Map : MonoBehaviour
     [SerializeField] private Color32 dirtColor = new Color32(255, 255, 255, 255);
     [SerializeField] private FilterMode filerMode;
     [SerializeField] private int pixelsPerUnits = 16;
-
+    [SerializeField] private Shader mapShader;
 
     public int PixelsPerUnits => pixelsPerUnits;
 
@@ -62,7 +62,7 @@ public class Map : MonoBehaviour
             meshFilters[i] = new GameObject().AddComponent<MeshFilter>();
             meshRenderers[i] = meshFilters[i].gameObject.AddComponent<MeshRenderer>();
             meshRenderers[i].shadowCastingMode = ShadowCastingMode.Off;
-            meshRenderers[i].material = new Material(Shader.Find("Custom/MapShader"));
+            meshRenderers[i].material = new Material(mapShader);
             meshFilters[i].mesh = quad;
             meshFilters[i].transform.parent = transform;
         }
@@ -70,6 +70,7 @@ public class Map : MonoBehaviour
         meshFilters[0].transform.position = new Vector3(0, 0, 2); //behind grass(z=1) and lawnmowers(z=0)
         meshFilters[1].transform.position = new Vector3(0, 0, 1); //behind lawnmowers(z=0)
         meshFilters[2].transform.position = new Vector3(0, 0, -1); //front of lawnmowers(z=0)
+        
     }
 
     public void Generate(int seed)
@@ -93,7 +94,7 @@ public class Map : MonoBehaviour
         meshRenderers[1].material.SetTexture("_AlphaTex", grassMaskTexture);
         meshRenderers[1].material.SetFloat("_AlphaTexEnabled", 1.0f);
         meshRenderers[2].material.mainTexture = rockTexture;
-
+        
         FillMap();
 
         dirtTexture.Apply(false, false);

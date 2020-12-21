@@ -17,6 +17,7 @@ public class MowParticules : MonoBehaviour
     [SerializeField] private float lossOfMomentum = 1.4f;
     [SerializeField] private float minZ = 0.6f;
     [SerializeField] private float spread = 3;
+    [SerializeField] private Shader particulesShader;
     private Material material;
     private LawnMower lawnMower;
     private Mesh quad;
@@ -35,7 +36,7 @@ public class MowParticules : MonoBehaviour
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
         lawnMower = GetComponent<LawnMower>();
 
-        material = new Material(Shader.Find("Custom/ParticulesShader"));
+        material = new Material(particulesShader);
         material.enableInstancing = true;
 
         quad = GeometryUtils.CreateQuad(1.0f / gameManager.Map.PixelsPerUnits, 1.0f / gameManager.Map.PixelsPerUnits);

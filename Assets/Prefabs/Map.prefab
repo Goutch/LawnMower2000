@@ -71,3 +71,4 @@ MonoBehaviour:
     rgba: 4278597982
   filerMode: 0
   pixelsPerUnits: 16
+  mapShader: {fileID: 4800000, guid: f562105fc4b676d4b87be7be152f5148, type: 3}

@@ -152,3 +152,4 @@ MonoBehaviour:
   lossOfMomentum: 2
   minZ: 0.6
   spread: 3
+  particulesShader: {fileID: 4800000, guid: 2b96a456d98b39547946ef4f3c9d175f, type: 3}

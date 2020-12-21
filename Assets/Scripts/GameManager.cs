@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     void StartGame()
     {
         Map.Generate(Random.Range(0, int.MaxValue));
-        gameDuration = (((Options.MapSize.x - 2) * (Options.MapSize.y - 2)) / 2) - 4;
+        gameDuration = 40.0f;a
         
         Player = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
         AI = Instantiate(LawnMowerPrefab, Map.GetSpawnPoint(), quaternion.identity).GetComponent<LawnMower>();
